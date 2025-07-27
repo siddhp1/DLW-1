@@ -2,7 +2,7 @@ add_library(dlw-1 STATIC
     cpu.cpp
     instruction.cpp
     memory.cpp
-    simulator.cpp
+    emulator.cpp
 )
 
 target_include_directories(dlw-1 PUBLIC

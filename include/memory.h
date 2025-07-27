@@ -11,6 +11,9 @@ class Memory {
 
  public:
   // accessors and mutators for memory
+  void write8(u_int8_t addr, u_int8_t val);
+
+  void print();
 };
 
 #endif
