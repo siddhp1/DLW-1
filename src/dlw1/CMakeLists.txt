@@ -1,0 +1,6 @@
+add_library(dlw1 cpu.cpp emulator.cpp instruction.cpp memory.cpp)
+
+target_include_directories(dlw1 PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+                                       $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>)
+
+target_compile_features(dlw1 PUBLIC cxx_std_23)

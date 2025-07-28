@@ -1,19 +1,12 @@
-cmake_minimum_required(VERSION 3.16)
-project(DLW1 VERSION 0.1 LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.21)
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Use folders in IDEs
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+project(
+  DLW1
+  VERSION 0.0.1
+  DESCRIPTION "DLW-1 Emulator"
+  LANGUAGES CXX C)
 
-# Copy sample program to build directory
-configure_file(
-    ${CMAKE_SOURCE_DIR}/resources/program.bin 
-    ${CMAKE_BINARY_DIR}/program.bin 
-    COPYONLY
-)
-
-# Add subdirectories
 add_subdirectory(src)

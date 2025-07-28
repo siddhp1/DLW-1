@@ -1,5 +1,5 @@
-#ifndef INSTRUCTION_H
-#define INSTRUCTION_H
+#ifndef INSTRUCTION_HPP
+#define INSTRUCTION_HPP
 
 #include <sys/types.h>
 

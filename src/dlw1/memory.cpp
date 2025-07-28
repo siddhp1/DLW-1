@@ -1,10 +1,10 @@
-#include "memory.h"
+#include "dlw1/memory.hpp"
 
 #include <bitset>
 #include <iostream>
 #include <stdexcept>
 
-void Memory::write8(u_int8_t addr, u_int8_t val) {
+void Memory::write8(uint8_t addr, uint8_t val) {
   if (addr >= mem.size()) {
     throw std::out_of_range("Memory write out of bounds");
   }
@@ -17,7 +17,7 @@ void Memory::print() {
   bool empty = true;
 
   for (size_t i = 0; i < mem.size(); ++i) {
-    u_int8_t byte = mem[i];
+    uint8_t byte = mem[i];
 
     if (byte != 0) {
       std::cout << "Address " << static_cast<int>(i) << ": ";
