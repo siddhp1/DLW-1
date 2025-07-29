@@ -5,6 +5,7 @@
 #include <cstdint>
 
 #include "instruction.hpp"
+#include "memory.hpp"
 
 class CPU {
  private:
@@ -16,10 +17,9 @@ class CPU {
       0};  // 4 8-bit (1 byte) general purpose registers
 
  public:
-  // fetch method
   Instruction Decode(uint16_t raw);
+  void Fetch(const Memory &memory);
   // execute method
-  // accessors and mutators where needed
 };
 
 #endif

@@ -3,16 +3,21 @@
 
 #include <array>
 #include <cstdint>
+#include <iostream>
 
 class Memory {
  private:
-  std::array<uint8_t, 256> mem = {0};
+  static constexpr size_t BANK_SIZE = 256;
+  static constexpr size_t NUM_BANKS = 4;
+
+  std::array<std::array<uint8_t, BANK_SIZE>, NUM_BANKS> banks;
+  uint8_t current_bank = 0;
 
  public:
-  // accessors and mutators for memory
-  void write8(uint8_t addr, uint8_t val);
+  uint8_t ReadByte(const uint8_t addr) const;
+  void WriteByte(const uint8_t addr, const uint8_t val);
 
-  void print();
+  friend std::ostream& operator<<(std::ostream& os, const Memory& mem);
 };
 
 #endif
