@@ -4,13 +4,7 @@
 #include <array>
 #include <cstdint>
 
-// Mapping for general purpose registers
-enum class RegisterID : uint8_t {
-  A = 0b00,
-  B = 0b01,
-  C = 0b10,
-  D = 0b11,
-};
+#include "instruction.hpp"
 
 class CPU {
  private:
@@ -23,7 +17,7 @@ class CPU {
 
  public:
   // fetch method
-  // decode method
+  Instruction decode(uint16_t raw);
   // execute method
   // accessors and mutators where needed
 };

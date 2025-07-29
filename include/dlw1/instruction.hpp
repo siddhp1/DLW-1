@@ -1,10 +1,17 @@
 #ifndef INSTRUCTION_HPP
 #define INSTRUCTION_HPP
 
-#include <sys/types.h>
+#include <cstdint>
+#include <iostream>
 
-enum class Opcode : u_int8_t {
-  ADD = 0b00,
+enum class AddressingMode {
+  REGISTER,
+  IMMEDIATE,
+  RELATIVE,
+};
+
+enum class Opcode : uint8_t {
+  ADD = 0b000,
   SUB = 0b001,
   LOAD = 0b010,
   STORE = 0b011,
@@ -14,25 +21,27 @@ enum class Opcode : u_int8_t {
   JUMPN = 0b111,
 };
 
-enum class InstructionMode : u_int8_t {
-  REGISTER = 0b0,
-  IMMEDIATE = 0b1,
+enum class RegisterId : uint8_t {
+  A = 0b00,
+  B = 0b01,
+  C = 0b10,
+  D = 0b11,
+  NONE = 0b11 + 1,  // For creating instances of Instruction
 };
-
-typedef u_int16_t binary_instruction;
 
 struct Instruction {
-  InstructionMode mode;
+  AddressingMode mode;
   Opcode opcode;
 
-  u_int8_t src1 : 2;
-  u_int8_t src2 : 2;
-  u_int8_t dest : 2;
-  u_int8_t imm;  // 8-bit immediate/offset
+  RegisterId src = RegisterId::NONE;
+  RegisterId src2 = RegisterId::NONE;
+  RegisterId dest = RegisterId::NONE;
 
-  // Internal flags
-  bool use_imm;
-  bool is_relative;
+  uint8_t imm;  // 8-bit immediate/offset
+
+  uint16_t encoded;  // Raw instruction
 };
+
+std::ostream& operator<<(std::ostream& os, const Instruction& ins);
 
 #endif
