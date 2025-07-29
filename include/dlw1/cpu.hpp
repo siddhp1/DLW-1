@@ -17,7 +17,7 @@ class CPU {
 
  public:
   // fetch method
-  Instruction decode(uint16_t raw);
+  Instruction Decode(uint16_t raw);
   // execute method
   // accessors and mutators where needed
 };
