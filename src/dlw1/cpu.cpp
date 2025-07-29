@@ -85,3 +85,9 @@ Instruction CPU::Decode(uint16_t raw) {
 
   return ins;
 }
+
+void CPU::Fetch(const Memory& memory) {
+  uint8_t high = memory.ReadByte(pc++);
+  uint8_t low = memory.ReadByte(pc++);
+  ir = (high << 8) | low;
+}
