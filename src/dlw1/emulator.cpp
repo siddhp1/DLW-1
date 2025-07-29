@@ -22,5 +22,3 @@
 //     memory.write8(addr++, byte);
 //   }
 // }
-
-void Emulator::print_memory() { memory.print(); }
