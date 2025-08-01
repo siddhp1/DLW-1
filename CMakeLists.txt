@@ -10,3 +10,4 @@ project(
   LANGUAGES CXX C)
 
 add_subdirectory(src)
+add_subdirectory(tests)
