@@ -21,6 +21,7 @@ class CPU {
 
  public:
   Instruction Decode(uint16_t raw);
+  Instruction Decode();
   void Execute(const Instruction& instruction, Memory& memory);
   void Fetch(const Memory& memory);
 };
