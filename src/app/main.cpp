@@ -4,6 +4,7 @@
 #include "dlw1/emulator.hpp"
 #include "dlw1/instruction.hpp"
 
+// Repurpose this function to test writing a program to memory
 void TestDecode() {
   CPU cpu;
   std::string input;
@@ -33,6 +34,12 @@ void TestDecode() {
 }
 
 int main(void) {
-  TestDecode();
+  // TestDecode();
+
+  Emulator emulator;
+
+  emulator.LoadProgram("program.bin");
+  emulator.Run();
+
   return 0;
 }

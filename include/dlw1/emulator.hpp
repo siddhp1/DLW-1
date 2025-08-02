@@ -12,11 +12,8 @@ class Emulator {
   Memory memory;
 
  public:
-  // ctors to initialize the CPU and memory
-  // void load_program(const std::string& filename);
-  // methods to run the fetch-decode-execute loop
-
-  void print_memory();  // Temporary
+  void LoadProgram(const std::string& filename);
+  void Run();
 };
 
 #endif
