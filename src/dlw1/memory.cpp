@@ -5,26 +5,22 @@
 #include <iostream>
 #include <stdexcept>
 
+uint8_t Memory::GetCurrentBank() const { return current_bank; }
+
+uint8_t Memory::GetNumBanks() const { return DEFAULT_NUM_BANKS; }
+
 uint8_t Memory::ReadByte(const uint8_t addr) const {
   // No out of bounds check since addr is always <= bank size
   // Logging statement
   return banks[current_bank][addr];
 }
 
+void Memory::SetCurrentBank(const uint8_t bank) { current_bank = bank; }
+
 void Memory::WriteByte(const uint8_t addr, const uint8_t val) {
-  // Bank switching
-  if (addr == 0xFF) {
-    if (val >= NUM_BANKS) throw std::out_of_range("Invalid bank number");
-
-    current_bank = val;
-    // Logging statement
-
-    return;
-  }
-
   // No out of bounds check since addr is always <= bank size
-  banks[current_bank][addr] = val;
   // Logging statement
+  banks[current_bank][addr] = val;
 }
 
 std::ostream& operator<<(std::ostream& os, const Memory& mem) {

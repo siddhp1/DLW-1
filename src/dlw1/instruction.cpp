@@ -13,7 +13,7 @@ std::ostream& operator<<(std::ostream& os, const AddressingMode& mode) {
     case AddressingMode::RELATIVE:
       return os << "RELATIVE";
     default:
-      return os << "UNKNOWN";
+      return os << "NONE";
   }
 }
 
