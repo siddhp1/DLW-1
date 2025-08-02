@@ -19,6 +19,8 @@ void CPU::WriteRegister(const RegisterId register_id, const uint8_t value) {
   gpr[static_cast<size_t>(register_id)] = value;
 }
 
+Instruction CPU::Decode() { return Decode(ir); }
+
 Instruction CPU::Decode(uint16_t raw) {
   Instruction ins{};
 
@@ -52,14 +54,19 @@ Instruction CPU::Decode(uint16_t raw) {
           ins.imm = (raw >> 8) & 0b11111111;
         } else {
           ins.mode = AddressingMode::RELATIVE;
-          ins.src = static_cast<RegisterId>((raw >> 4) & 0b11);  // Base
+          ins.src = static_cast<RegisterId>((raw >> 4) & 0b11);
           ins.dest = static_cast<RegisterId>((raw >> 6) & 0b11);
           ins.imm = (raw >> 8) & 0b11111111;
         }
       } else {
-        ins.mode = AddressingMode::REGISTER;
-        ins.src = static_cast<RegisterId>((raw >> 4) & 0b11);
-        ins.dest = static_cast<RegisterId>((raw >> 8) & 0b11);
+        if (((raw >> 6) & 0b11) == 0) {
+          ins.mode = AddressingMode::REGISTER;
+          ins.src = static_cast<RegisterId>((raw >> 4) & 0b11);
+          ins.dest = static_cast<RegisterId>((raw >> 8) & 0b11);
+        } else {
+          // Bank switch
+          ins.imm = (raw >> 8) & 0xFF;
+        }
       }
       break;
     case Opcode::STORE:
@@ -70,7 +77,7 @@ Instruction CPU::Decode(uint16_t raw) {
           ins.imm = (raw >> 8) & 0b11111111;
         } else {
           ins.mode = AddressingMode::RELATIVE;
-          ins.src = static_cast<RegisterId>((raw >> 4) & 0b11);  // Base
+          ins.src = static_cast<RegisterId>((raw >> 4) & 0b11);
           ins.src2 = static_cast<RegisterId>((raw >> 6) & 0b11);
           ins.imm = (raw >> 8) & 0b11111111;
         }
@@ -90,16 +97,19 @@ Instruction CPU::Decode(uint16_t raw) {
           ins.imm = (raw >> 8) & 0b11111111;
         } else {
           ins.mode = AddressingMode::RELATIVE;
-          ins.src = static_cast<RegisterId>((raw >> 4) & 0b11);  // Base
+          ins.src = static_cast<RegisterId>((raw >> 4) & 0b11);
           ins.imm = (raw >> 8) & 0b11111111;
         }
       } else {
-        ins.mode = AddressingMode::REGISTER;
-        ins.src = static_cast<RegisterId>((raw >> 4) & 0b11);
+        if ((raw >> 6) == 0) {
+          ins.mode = AddressingMode::REGISTER;
+          ins.src = static_cast<RegisterId>((raw >> 4) & 0b11);
+        } else {
+          // Halt
+        }
       }
       break;
   }
-
   return ins;
 }
 
@@ -130,10 +140,15 @@ void CPU::Execute(const Instruction& instruction, Memory& memory) {
           WriteRegister(instruction.dest,
                         memory.ReadByte(ReadRegister(instruction.src)));
           break;
-        case AddressingMode::RELATIVE:
+        case AddressingMode::RELATIVE: {
           int8_t offset = static_cast<int8_t>(instruction.imm);
           uint8_t address = ReadRegister(instruction.src) + offset;
           WriteRegister(instruction.dest, memory.ReadByte(address));
+          break;
+        }
+        case AddressingMode::NONE:
+          memory.SetCurrentBank(instruction.imm);
+        default:
           break;
       }
       break;
@@ -146,10 +161,14 @@ void CPU::Execute(const Instruction& instruction, Memory& memory) {
           memory.WriteByte(ReadRegister(instruction.dest),
                            ReadRegister(instruction.src));
           break;
-        case AddressingMode::RELATIVE:
+        case AddressingMode::RELATIVE: {
           int8_t offset = static_cast<int8_t>(instruction.imm);
           uint8_t address = ReadRegister(instruction.src) + offset;
           memory.WriteByte(address, ReadRegister(instruction.src2));
+          break;
+        }
+        case AddressingMode::NONE:
+        default:
           break;
       }
       break;
@@ -165,9 +184,15 @@ void CPU::Execute(const Instruction& instruction, Memory& memory) {
         case AddressingMode::REGISTER:
           address = ReadRegister(instruction.src);
           break;
-        case AddressingMode::RELATIVE:
+        case AddressingMode::RELATIVE: {
           int8_t offset = static_cast<int8_t>(instruction.imm);
           address = ReadRegister(instruction.src) + offset;
+          break;
+        }
+        case AddressingMode::NONE:
+          // Halt logic
+          break;
+        default:
           break;
       }
 
@@ -185,13 +210,15 @@ void CPU::Execute(const Instruction& instruction, Memory& memory) {
         case Opcode::JUMPN:
           execute_jump = (psw & 0b10) != 0;
           break;
-        default:  // Case is not possible
+        default:
           break;
       }
 
       if (execute_jump) pc = address;
       break;
     }
+    default:
+      break;
   }
 }
 

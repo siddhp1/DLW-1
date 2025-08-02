@@ -124,6 +124,23 @@ TEST(CPUDecodeTest, DecodeLoadRelative) {
   EXPECT_EQ(instruction.encoded, raw);
 }
 
+TEST(CPUDecodeTest, DecodeBankSwitch) {
+  CPU cpu;
+  Memory memory;
+
+  uint16_t raw = 0b0000100011110100;
+
+  Instruction instruction = cpu.Decode(raw);
+
+  EXPECT_EQ(instruction.mode, AddressingMode::NONE);
+  EXPECT_EQ(instruction.opcode, Opcode::LOAD);
+  EXPECT_EQ(instruction.src, RegisterId::NONE);
+  EXPECT_EQ(instruction.src2, RegisterId::NONE);
+  EXPECT_EQ(instruction.dest, RegisterId::NONE);
+  EXPECT_EQ(instruction.imm, 8);
+  EXPECT_EQ(instruction.encoded, raw);
+}
+
 TEST(CPUDecodeTest, DecodeStoreImmediate) {
   CPU cpu;
   Memory memory;
@@ -223,6 +240,23 @@ TEST(CPUDecodeTest, DecodeJumpRelative) {
   EXPECT_EQ(instruction.src2, RegisterId::NONE);
   EXPECT_EQ(instruction.dest, RegisterId::NONE);
   EXPECT_EQ(instruction.imm, 127);
+  EXPECT_EQ(instruction.encoded, raw);
+}
+
+TEST(CPUDecodeTest, DecodeHalt) {
+  CPU cpu;
+  Memory memory;
+
+  uint16_t raw = 0b1111111100001000;
+
+  Instruction instruction = cpu.Decode(raw);
+
+  EXPECT_EQ(instruction.mode, AddressingMode::NONE);
+  EXPECT_EQ(instruction.opcode, Opcode::JUMP);
+  EXPECT_EQ(instruction.src, RegisterId::NONE);
+  EXPECT_EQ(instruction.src2, RegisterId::NONE);
+  EXPECT_EQ(instruction.dest, RegisterId::NONE);
+  EXPECT_EQ(instruction.imm, 0);
   EXPECT_EQ(instruction.encoded, raw);
 }
 

@@ -8,6 +8,7 @@ enum class AddressingMode {
   REGISTER,
   IMMEDIATE,
   RELATIVE,
+  NONE,
 };
 
 enum class Opcode : uint8_t {
@@ -30,7 +31,7 @@ enum class RegisterId : uint8_t {
 };
 
 struct Instruction {
-  AddressingMode mode;
+  AddressingMode mode = AddressingMode::NONE;
   Opcode opcode;
 
   RegisterId src = RegisterId::NONE;
