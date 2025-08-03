@@ -230,16 +230,16 @@ TEST(CPUDecodeTest, DecodeJumpRelative) {
   CPU cpu;
   Memory memory;
 
-  uint16_t raw = 0b0111111100111001;
+  uint16_t raw = 0b0111111110011001;
 
   Instruction instruction = cpu.Decode(raw);
 
   EXPECT_EQ(instruction.mode, AddressingMode::RELATIVE);
   EXPECT_EQ(instruction.opcode, Opcode::JUMP);
-  EXPECT_EQ(instruction.src, RegisterId::D);
+  EXPECT_EQ(instruction.src, RegisterId::NONE);
   EXPECT_EQ(instruction.src2, RegisterId::NONE);
   EXPECT_EQ(instruction.dest, RegisterId::NONE);
-  EXPECT_EQ(instruction.imm, 127);
+  EXPECT_EQ(instruction.imm, 255);
   EXPECT_EQ(instruction.encoded, raw);
 }
 
@@ -298,16 +298,16 @@ TEST(CPUDecodeTest, DecodeJumpzRelative) {
   CPU cpu;
   Memory memory;
 
-  uint16_t raw = 0b0111111100111011;
+  uint16_t raw = 0b0111111110011011;
 
   Instruction instruction = cpu.Decode(raw);
 
   EXPECT_EQ(instruction.mode, AddressingMode::RELATIVE);
   EXPECT_EQ(instruction.opcode, Opcode::JUMPZ);
-  EXPECT_EQ(instruction.src, RegisterId::D);
+  EXPECT_EQ(instruction.src, RegisterId::NONE);
   EXPECT_EQ(instruction.src2, RegisterId::NONE);
   EXPECT_EQ(instruction.dest, RegisterId::NONE);
-  EXPECT_EQ(instruction.imm, 127);
+  EXPECT_EQ(instruction.imm, 255);
   EXPECT_EQ(instruction.encoded, raw);
 }
 
@@ -349,16 +349,16 @@ TEST(CPUDecodeTest, DecodeJumpnzRelative) {
   CPU cpu;
   Memory memory;
 
-  uint16_t raw = 0b0111111100111101;
+  uint16_t raw = 0b0111111110011101;
 
   Instruction instruction = cpu.Decode(raw);
 
   EXPECT_EQ(instruction.mode, AddressingMode::RELATIVE);
   EXPECT_EQ(instruction.opcode, Opcode::JUMPNZ);
-  EXPECT_EQ(instruction.src, RegisterId::D);
+  EXPECT_EQ(instruction.src, RegisterId::NONE);
   EXPECT_EQ(instruction.src2, RegisterId::NONE);
   EXPECT_EQ(instruction.dest, RegisterId::NONE);
-  EXPECT_EQ(instruction.imm, 127);
+  EXPECT_EQ(instruction.imm, 255);
   EXPECT_EQ(instruction.encoded, raw);
 }
 
@@ -400,15 +400,15 @@ TEST(CPUDecodeTest, DecodeJumpnRelative) {
   CPU cpu;
   Memory memory;
 
-  uint16_t raw = 0b0111111100111111;
+  uint16_t raw = 0b0111111110011111;
 
   Instruction instruction = cpu.Decode(raw);
 
   EXPECT_EQ(instruction.mode, AddressingMode::RELATIVE);
   EXPECT_EQ(instruction.opcode, Opcode::JUMPN);
-  EXPECT_EQ(instruction.src, RegisterId::D);
+  EXPECT_EQ(instruction.src, RegisterId::NONE);
   EXPECT_EQ(instruction.src2, RegisterId::NONE);
   EXPECT_EQ(instruction.dest, RegisterId::NONE);
-  EXPECT_EQ(instruction.imm, 127);
+  EXPECT_EQ(instruction.imm, 255);
   EXPECT_EQ(instruction.encoded, raw);
 }

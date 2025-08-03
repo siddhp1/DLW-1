@@ -38,7 +38,9 @@ struct Instruction {
   RegisterId src2 = RegisterId::NONE;
   RegisterId dest = RegisterId::NONE;
 
-  uint8_t imm;  // 8-bit immediate/offset
+  // All immediate values will be 8 bits except for relative jump addresses,
+  // which will be 9 bits
+  uint16_t imm;
 
   uint16_t encoded;  // Raw instruction
 };

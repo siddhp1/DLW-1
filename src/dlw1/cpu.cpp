@@ -97,8 +97,8 @@ Instruction CPU::Decode(uint16_t raw) {
           ins.imm = (raw >> 8) & 0b11111111;
         } else {
           ins.mode = AddressingMode::RELATIVE;
-          ins.src = static_cast<RegisterId>((raw >> 4) & 0b11);
-          ins.imm = (raw >> 8) & 0b11111111;
+          ins.imm =
+              (raw >> 7) & 0x1FF;  // Using 9-bit immedaite for relative jumps
         }
       } else {
         if ((raw >> 6) == 0) {
@@ -141,8 +141,8 @@ void CPU::Execute(const Instruction& instruction, Memory& memory) {
                         memory.ReadByte(ReadRegister(instruction.src)));
           break;
         case AddressingMode::RELATIVE: {
-          int8_t offset = static_cast<int8_t>(instruction.imm);
-          uint8_t address = ReadRegister(instruction.src) + offset;
+          uint8_t address =
+              ReadRegister(instruction.src) + CalculateOffset(instruction.imm);
           WriteRegister(instruction.dest, memory.ReadByte(address));
           break;
         }
@@ -163,7 +163,8 @@ void CPU::Execute(const Instruction& instruction, Memory& memory) {
           break;
         case AddressingMode::RELATIVE: {
           int8_t offset = static_cast<int8_t>(instruction.imm);
-          uint8_t address = ReadRegister(instruction.src) + offset;
+          uint8_t address =
+              ReadRegister(instruction.src) + CalculateOffset(instruction.imm);
           memory.WriteByte(address, ReadRegister(instruction.src2));
           break;
         }
@@ -185,8 +186,7 @@ void CPU::Execute(const Instruction& instruction, Memory& memory) {
           address = ReadRegister(instruction.src);
           break;
         case AddressingMode::RELATIVE: {
-          int8_t offset = static_cast<int8_t>(instruction.imm);
-          address = ReadRegister(instruction.src) + offset;
+          address = pc + CalculateOffset(instruction.imm);
           break;
         }
         case AddressingMode::NONE:
@@ -226,4 +226,18 @@ void CPU::Fetch(const Memory& memory) {
   uint8_t high = memory.ReadByte(pc++);
   uint8_t low = memory.ReadByte(pc++);
   ir = (high << 8) | low;
+}
+
+uint8_t CPU::GetPC() const { return pc; }
+
+int16_t CPU::CalculateOffset(uint16_t imm) {
+  if ((imm >> 8) == 0) {
+    // Process as an 8-bit immediate
+    return static_cast<int16_t>(static_cast<int8_t>(imm));
+  } else {
+    // Process as a 9-bit immediate
+    imm &= 0x1FF;  // Assume 9-bit immediate when using uint16_t
+    imm = (imm & 0x100) ? (imm | ~0x1FF) : imm;  // Sign extend to 16 bits
+    return static_cast<int16_t>(imm);
+  }
 }

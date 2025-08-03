@@ -24,6 +24,9 @@ class CPU {
   Instruction Decode();
   void Execute(const Instruction& instruction, Memory& memory);
   void Fetch(const Memory& memory);
+  uint8_t GetPC() const;
+
+  static int16_t CalculateOffset(uint16_t imm);
 };
 
 #endif
