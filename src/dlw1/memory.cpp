@@ -1,7 +1,6 @@
 #include "dlw1/memory.hpp"
 
 #include <bitset>
-#include <iomanip>
 #include <iostream>
 #include <stdexcept>
 
@@ -24,14 +23,11 @@ void Memory::WriteByte(const uint8_t addr, const uint8_t val) {
 }
 
 std::ostream& operator<<(std::ostream& os, const Memory& mem) {
-  // For now, output a 16x16 grid of hex values from the current bank
-  os << std::hex << std::setfill('0');
-
-  for (size_t row = 0; row < 16; ++row) {
-    for (size_t col = 0; col < 16; ++col) {
-      uint8_t addr = row * 16 + col;
-      os << std::setw(2) << static_cast<int>(mem.banks[mem.current_bank][addr])
-         << std::endl;
+  // For now, output an 8x32 matrix of binary values
+  for (size_t row = 0; row < 32; ++row) {
+    for (size_t col = 0; col < 8; ++col) {
+      uint8_t addr = row * 8 + col;
+      os << std::bitset<8>(mem.banks[mem.current_bank][addr]) << " ";
     }
     os << std::endl;
   }

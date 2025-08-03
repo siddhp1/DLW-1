@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <iostream>
 
+#include "dlw1/cpu.hpp"
+
 std::ostream& operator<<(std::ostream& os, const AddressingMode& mode) {
   switch (mode) {
     case AddressingMode::REGISTER:
@@ -77,7 +79,7 @@ std::ostream& operator<<(std::ostream& os, const Instruction& ins) {
         os << "Src: " << ins.src2 << std::endl;
       }
       os << "Base: " << ins.src << std::endl;
-      os << "Offset: " << static_cast<int>(ins.imm) << std::endl;
+      os << "Offset: " << CPU::CalculateOffset(ins.imm) << std::endl;
       if (ins.opcode == Opcode::LOAD) {
         os << "Dest: " << ins.dest << std::endl;
       }
