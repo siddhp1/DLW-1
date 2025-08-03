@@ -79,7 +79,7 @@ std::ostream& operator<<(std::ostream& os, const Instruction& ins) {
         os << "Src: " << ins.src2 << std::endl;
       }
       os << "Base: " << ins.src << std::endl;
-      os << "Offset: " << CPU::CalculateOffset(ins.imm) << std::endl;
+      os << "Offset: " << CPU::CalculateOffset(ins.imm, ins.opcode) << std::endl;
       if (ins.opcode == Opcode::LOAD) {
         os << "Dest: " << ins.dest << std::endl;
       }

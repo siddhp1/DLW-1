@@ -412,3 +412,54 @@ TEST(CPUDecodeTest, DecodeJumpnRelative) {
   EXPECT_EQ(instruction.imm, 255);
   EXPECT_EQ(instruction.encoded, raw);
 }
+
+// For each execute test, create CPU and Memory, create an Instruction object,
+// execute on that object, check registers, memory, PSW, and PC to see results
+// TEST(CPUExecuteTest, ExecuteAddImmediate) { return; }
+
+class LoadStoreOffsetTest : public ::testing::TestWithParam<Opcode> {};
+
+TEST_P(LoadStoreOffsetTest, PositiveOffset) {
+  uint16_t immediate = 0b01010101;
+  int8_t offset = CPU::CalculateOffset(immediate, GetParam()); 
+  EXPECT_EQ(offset, 85);
+}
+
+TEST_P(LoadStoreOffsetTest, NegativeOffset) {
+  uint16_t immediate = 0b11010101;
+  int8_t offset = CPU::CalculateOffset(immediate, GetParam());
+  EXPECT_EQ(offset, -43);
+}
+
+TEST_P(LoadStoreOffsetTest, ZeroOffset) {
+  uint16_t immediate = 0b00000000;
+  int8_t offset = CPU::CalculateOffset(immediate, GetParam());
+  EXPECT_EQ(offset, 0);
+}
+
+INSTANTIATE_TEST_SUITE_P(CPUCalculateLoadStoreOffsetTest, LoadStoreOffsetTest,
+                         ::testing::Values(Opcode::LOAD, Opcode::STORE));
+
+class JumpOffsetTest : public ::testing::TestWithParam<Opcode> {};
+
+TEST_P(JumpOffsetTest, PositiveOffset) {
+  uint16_t immediate = 0b010000010;
+  int16_t offset = CPU::CalculateOffset(immediate, GetParam());
+  EXPECT_EQ(offset, 130);
+}
+
+TEST_P(JumpOffsetTest, NegativeOffset) {
+  uint16_t immediate = 0b100000110;
+  int16_t offset = CPU::CalculateOffset(immediate, GetParam());
+  EXPECT_EQ(offset, -250);
+}
+
+TEST_P(JumpOffsetTest, ZeroOffset) {
+  uint16_t immediate = 0b000000000;
+  int16_t offset = CPU::CalculateOffset(immediate, GetParam()); 
+  EXPECT_EQ(offset, 0);
+}
+
+INSTANTIATE_TEST_SUITE_P(CPUCalculateJumpOffsetTest, JumpOffsetTest,
+                         ::testing::Values(Opcode::JUMP, Opcode::JUMPZ,
+                                           Opcode::JUMPNZ, Opcode::JUMPN));

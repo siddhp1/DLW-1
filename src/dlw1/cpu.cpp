@@ -141,7 +141,8 @@ void CPU::Execute(const Instruction& instruction, Memory& memory) {
           break;
         case AddressingMode::RELATIVE: {
           uint8_t address =
-              ReadRegister(instruction.src) + CalculateOffset(instruction.imm);
+              ReadRegister(instruction.src) +
+              CalculateOffset(instruction.imm, instruction.opcode);
           WriteRegister(instruction.dest, memory.ReadByte(address));
           break;
         }
@@ -162,7 +163,8 @@ void CPU::Execute(const Instruction& instruction, Memory& memory) {
           break;
         case AddressingMode::RELATIVE: {
           uint8_t address =
-              ReadRegister(instruction.src) + CalculateOffset(instruction.imm);
+              ReadRegister(instruction.src) +
+              CalculateOffset(instruction.imm, instruction.opcode);
           memory.WriteByte(address, ReadRegister(instruction.src2));
           break;
         }
@@ -185,7 +187,7 @@ void CPU::Execute(const Instruction& instruction, Memory& memory) {
           address = ReadRegister(instruction.src);
           break;
         case AddressingMode::RELATIVE: {
-          address = pc + CalculateOffset(instruction.imm);
+          address = pc + CalculateOffset(instruction.imm, instruction.opcode);
           break;
         }
         case AddressingMode::NONE:
@@ -232,13 +234,13 @@ void CPU::Fetch(const Memory& memory) {
 
 uint8_t CPU::GetPC() const { return pc; }
 
-int16_t CPU::CalculateOffset(uint16_t imm) {
-  if ((imm >> 8) == 0) {
+int16_t CPU::CalculateOffset(uint16_t imm, Opcode opcode) {
+  if (opcode == Opcode::LOAD || opcode == Opcode::STORE) {
     // Process as an 8-bit immediate
     return static_cast<int16_t>(static_cast<int8_t>(imm));
   } else {
     // Process as a 9-bit immediate
-    imm &= 0x1FF;  // Assume 9-bit immediate when using uint16_t
+    imm &= 0x1FF;
     imm = (imm & 0x100) ? (imm | ~0x1FF) : imm;  // Sign extend to 16 bits
     return static_cast<int16_t>(imm);
   }
