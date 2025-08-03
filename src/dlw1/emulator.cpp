@@ -15,37 +15,36 @@ void Emulator::LoadProgram(const std::string& file_path) {
   }
 
   uint8_t address = 0;
-  size_t iteration = 0;  // Temporary
+  size_t bytes_read = 0;
 
   uint8_t byte = 0;
   while (program_file.read(reinterpret_cast<char*>(&byte), 1)) {
-    // Temporary
-    std::cout << std::bitset<8>(byte);
-    if (iteration > 0 && iteration % 2 != 0) {
-      std::cout << std::endl;
-    }
-
-    memory.WriteByte(address, byte);
+    memory.WriteByte(address++, byte);
 
     if (address == 255) {
       address = 0;
       memory.SetCurrentBank(memory.GetCurrentBank() + 1);
     }
 
-    iteration++;
+    bytes_read++;
   }
+
+  std::cout << "Total bytes read: " << bytes_read << std::endl;
 }
 
 void Emulator::Run() {
-  size_t iteration = 0;
+  std::cout << memory;
 
-  // Running indefinitely until halt functionality is added
-  while (iteration < 100) {
+  while (!cpu.halted) {
     cpu.Fetch(memory);
+
     Instruction instruction = cpu.Decode();
+    std::cout << instruction << std::endl;
+
     cpu.Execute(instruction, memory);
 
     // Add logging for each cycle
-    std::cout << "Iteration: " << iteration++ << std::endl;  // Temporary
   }
+
+  std::cout << memory;
 }
