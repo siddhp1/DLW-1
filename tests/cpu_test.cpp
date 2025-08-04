@@ -204,22 +204,22 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     SUB, CPUExecuteTest,
     ::testing::Values(
-        // SUB Immediate: A(20) - 5 = D(15)
+        // SUB Immediate: A(20) - 20 = D(0)
         std::make_tuple(std::array<uint8_t, 4>{20, 0, 0, 0}, 0, 0,
                         std::vector<std::pair<uint8_t, uint8_t>>{},
                         Instruction{AddressingMode::IMMEDIATE, Opcode::SUB,
                                     RegisterId::A, RegisterId::NONE,
-                                    RegisterId::D, 5, 0},
-                        std::array<uint8_t, 4>{20, 0, 0, 15}, 0, 0, false,
+                                    RegisterId::D, 20, 0},
+                        std::array<uint8_t, 4>{20, 0, 0, 0}, 0, 0b01, false,
                         std::vector<std::pair<uint8_t, uint8_t>>{}),
-        // SUB Register: A(20) - B(5) = C(15)
-        std::make_tuple(std::array<uint8_t, 4>{20, 5, 0, 0}, 0, 0,
+        // SUB Register: A(5) - B(20) = C(-15)
+        std::make_tuple(std::array<uint8_t, 4>{5, 20, 0, 0}, 0, 0,
                         std::vector<std::pair<uint8_t, uint8_t>>{},
                         Instruction{AddressingMode::REGISTER, Opcode::SUB,
                                     RegisterId::A, RegisterId::B, RegisterId::C,
                                     0, 0},
-                        std::array<uint8_t, 4>{20, 5, 15, 0}, 0, 0, false,
-                        std::vector<std::pair<uint8_t, uint8_t>>{})));
+                        std::array<uint8_t, 4>{5, 20, 0b11110001, 0}, 0, 0b10,
+                        false, std::vector<std::pair<uint8_t, uint8_t>>{})));
 
 INSTANTIATE_TEST_SUITE_P(
     LOAD, CPUExecuteTest,
