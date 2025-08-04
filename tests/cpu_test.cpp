@@ -83,7 +83,9 @@ INSTANTIATE_TEST_SUITE_P(
                         RegisterId::C, 0),
         std::make_tuple(0b1100001000110111, AddressingMode::RELATIVE,
                         Opcode::STORE, RegisterId::D, RegisterId::A,
-                        RegisterId::NONE, 194)));
+                        RegisterId::NONE, 194),
+        std::make_tuple(0b0000001011010110, AddressingMode::NONE, Opcode::STORE,
+                        RegisterId::B, RegisterId::NONE, RegisterId::C, 0)));
 
 INSTANTIATE_TEST_SUITE_P(
     JUMP, CpuDecodeTest,
@@ -275,7 +277,15 @@ INSTANTIATE_TEST_SUITE_P(
                                     RegisterId::D, RegisterId::A,
                                     RegisterId::NONE, 10, 0},
                         std::array<uint8_t, 4>{42, 0, 0, 90}, 0, 0, false,
-                        std::vector<std::pair<uint8_t, uint8_t>>{{100, 42}})));
+                        std::vector<std::pair<uint8_t, uint8_t>>{{100, 42}}),
+        // MOV: Copy B(42) to C
+        std::make_tuple(std::array<uint8_t, 4>{0, 42, 0, 0}, 0, 0,
+                        std::vector<std::pair<uint8_t, uint8_t>>{},
+                        Instruction{AddressingMode::NONE, Opcode::STORE,
+                                    RegisterId::B, RegisterId::NONE,
+                                    RegisterId::C, 0, 0},
+                        std::array<uint8_t, 4>{0, 42, 42, 0}, 0, 0, false,
+                        std::vector<std::pair<uint8_t, uint8_t>>{})));
 
 INSTANTIATE_TEST_SUITE_P(
     JUMP, CpuExecuteTest,
