@@ -10,9 +10,9 @@ class Memory {
   static constexpr size_t BANK_SIZE = 256;
   static constexpr uint8_t DEFAULT_NUM_BANKS = 4;
 
-  // Make the bank size configurable using a constuctor after
+  // Make the number of banks configurable using a constuctor after
   std::array<std::array<uint8_t, BANK_SIZE>, DEFAULT_NUM_BANKS> banks;
-  uint8_t current_bank = 0;
+  uint8_t current_bank;
 
  public:
   uint8_t GetCurrentBank() const;

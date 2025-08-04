@@ -2,7 +2,6 @@
 
 #include <bitset>
 #include <iostream>
-#include <stdexcept>
 
 uint8_t Memory::GetCurrentBank() const { return current_bank; }
 

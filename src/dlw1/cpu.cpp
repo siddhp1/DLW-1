@@ -19,16 +19,14 @@ void CPU::WriteRegister(const RegisterId register_id, const uint8_t value) {
   gpr[static_cast<size_t>(register_id)] = value;
 }
 
-Instruction CPU::Decode() const { return Decode(ir); }
-
-Instruction CPU::Decode(uint16_t raw) const {
+Instruction CPU::Decode() const {
   Instruction ins{};
 
-  ins.encoded = raw;
+  ins.encoded = ir;
 
-  bool mode_flag = raw & 0b1;
+  bool mode_flag = ir & 0b1;
 
-  uint8_t opcode_bits = (raw >> 1) & 0b111;
+  uint8_t opcode_bits = (ir >> 1) & 0b111;
   ins.opcode = static_cast<Opcode>(opcode_bits);
 
   switch (ins.opcode) {
@@ -36,54 +34,54 @@ Instruction CPU::Decode(uint16_t raw) const {
     case Opcode::SUB:
       if (mode_flag) {
         ins.mode = AddressingMode::IMMEDIATE;
-        ins.src = static_cast<RegisterId>((raw >> 4) & 0b11);
-        ins.dest = static_cast<RegisterId>((raw >> 6) & 0b11);
-        ins.imm = (raw >> 8) & 0b11111111;
+        ins.src = static_cast<RegisterId>((ir >> 4) & 0b11);
+        ins.dest = static_cast<RegisterId>((ir >> 6) & 0b11);
+        ins.imm = (ir >> 8) & 0b11111111;
       } else {
         ins.mode = AddressingMode::REGISTER;
-        ins.src = static_cast<RegisterId>((raw >> 4) & 0b11);
-        ins.src2 = static_cast<RegisterId>((raw >> 6) & 0b11);
-        ins.dest = static_cast<RegisterId>((raw >> 8) & 0b11);
+        ins.src = static_cast<RegisterId>((ir >> 4) & 0b11);
+        ins.src2 = static_cast<RegisterId>((ir >> 6) & 0b11);
+        ins.dest = static_cast<RegisterId>((ir >> 8) & 0b11);
       }
       break;
     case Opcode::LOAD:
       if (mode_flag) {
-        if (((raw >> 4) & 0b11) == 0) {
+        if (((ir >> 4) & 0b11) == 0) {
           ins.mode = AddressingMode::IMMEDIATE;
-          ins.dest = static_cast<RegisterId>((raw >> 6) & 0b11);
-          ins.imm = (raw >> 8) & 0b11111111;
+          ins.dest = static_cast<RegisterId>((ir >> 6) & 0b11);
+          ins.imm = (ir >> 8) & 0b11111111;
         } else {
           ins.mode = AddressingMode::RELATIVE;
-          ins.src = static_cast<RegisterId>((raw >> 4) & 0b11);
-          ins.dest = static_cast<RegisterId>((raw >> 6) & 0b11);
-          ins.imm = (raw >> 8) & 0b11111111;
+          ins.src = static_cast<RegisterId>((ir >> 4) & 0b11);
+          ins.dest = static_cast<RegisterId>((ir >> 6) & 0b11);
+          ins.imm = (ir >> 8) & 0b11111111;
         }
       } else {
-        if (((raw >> 6) & 0b11) == 0) {
+        if (((ir >> 6) & 0b11) == 0) {
           ins.mode = AddressingMode::REGISTER;
-          ins.src = static_cast<RegisterId>((raw >> 4) & 0b11);
-          ins.dest = static_cast<RegisterId>((raw >> 8) & 0b11);
+          ins.src = static_cast<RegisterId>((ir >> 4) & 0b11);
+          ins.dest = static_cast<RegisterId>((ir >> 8) & 0b11);
         } else {
-          ins.imm = (raw >> 8) & 0xFF;  // Bank switch
+          ins.imm = (ir >> 8) & 0xFF;  // Bank switch
         }
       }
       break;
     case Opcode::STORE:
       if (mode_flag) {
-        if (((raw >> 4) & 0b11) == 0) {
+        if (((ir >> 4) & 0b11) == 0) {
           ins.mode = AddressingMode::IMMEDIATE;
-          ins.src = static_cast<RegisterId>((raw >> 6) & 0b11);
-          ins.imm = (raw >> 8) & 0b11111111;
+          ins.src = static_cast<RegisterId>((ir >> 6) & 0b11);
+          ins.imm = (ir >> 8) & 0b11111111;
         } else {
           ins.mode = AddressingMode::RELATIVE;
-          ins.src = static_cast<RegisterId>((raw >> 4) & 0b11);
-          ins.src2 = static_cast<RegisterId>((raw >> 6) & 0b11);
-          ins.imm = (raw >> 8) & 0b11111111;
+          ins.src = static_cast<RegisterId>((ir >> 4) & 0b11);
+          ins.src2 = static_cast<RegisterId>((ir >> 6) & 0b11);
+          ins.imm = (ir >> 8) & 0b11111111;
         }
       } else {
         ins.mode = AddressingMode::REGISTER;
-        ins.src = static_cast<RegisterId>((raw >> 4) & 0b11);
-        ins.dest = static_cast<RegisterId>((raw >> 8) & 0b11);
+        ins.src = static_cast<RegisterId>((ir >> 4) & 0b11);
+        ins.dest = static_cast<RegisterId>((ir >> 8) & 0b11);
       }
       break;
     case Opcode::JUMP:
@@ -91,18 +89,18 @@ Instruction CPU::Decode(uint16_t raw) const {
     case Opcode::JUMPNZ:
     case Opcode::JUMPN:
       if (mode_flag) {
-        if (((raw >> 4) & 0b11) == 0) {
+        if (((ir >> 4) & 0b11) == 0) {
           ins.mode = AddressingMode::IMMEDIATE;
-          ins.imm = (raw >> 8) & 0xFF;
+          ins.imm = (ir >> 8) & 0xFF;
         } else {
           ins.mode = AddressingMode::RELATIVE;
           ins.imm =
-              (raw >> 7) & 0x1FF;  // Using 9-bit immedaite for relative jumps
+              (ir >> 7) & 0x1FF;  // Using 9-bit immedaite for relative jumps
         }
       } else {
-        if ((raw >> 6) == 0) {
+        if ((ir >> 6) == 0) {
           ins.mode = AddressingMode::REGISTER;
-          ins.src = static_cast<RegisterId>((raw >> 4) & 0b11);
+          ins.src = static_cast<RegisterId>((ir >> 4) & 0b11);
         } else {
           break;  // Halt
         }
@@ -141,7 +139,8 @@ void CPU::Execute(const Instruction& instruction, Memory& memory) {
           break;
         case AddressingMode::RELATIVE: {
           uint8_t address =
-              ReadRegister(instruction.src) + CalculateOffset(instruction.imm);
+              ReadRegister(instruction.src) +
+              CalculateOffset(instruction.imm, instruction.opcode);
           WriteRegister(instruction.dest, memory.ReadByte(address));
           break;
         }
@@ -162,7 +161,8 @@ void CPU::Execute(const Instruction& instruction, Memory& memory) {
           break;
         case AddressingMode::RELATIVE: {
           uint8_t address =
-              ReadRegister(instruction.src) + CalculateOffset(instruction.imm);
+              ReadRegister(instruction.src) +
+              CalculateOffset(instruction.imm, instruction.opcode);
           memory.WriteByte(address, ReadRegister(instruction.src2));
           break;
         }
@@ -185,7 +185,7 @@ void CPU::Execute(const Instruction& instruction, Memory& memory) {
           address = ReadRegister(instruction.src);
           break;
         case AddressingMode::RELATIVE: {
-          address = pc + CalculateOffset(instruction.imm);
+          address = pc + CalculateOffset(instruction.imm, instruction.opcode);
           break;
         }
         case AddressingMode::NONE:
@@ -230,15 +230,23 @@ void CPU::Fetch(const Memory& memory) {
   ir = (high << 8) | low;
 }
 
-uint8_t CPU::GetPC() const { return pc; }
+uint16_t CPU::GetIr() const { return ir; }
 
-int16_t CPU::CalculateOffset(uint16_t imm) {
-  if ((imm >> 8) == 0) {
+uint8_t CPU::GetPc() const { return pc; }
+
+uint8_t CPU::GetPsw() const { return psw; }
+
+uint8_t CPU::GetRegister(RegisterId register_id) const {
+  return ReadRegister(register_id);
+}
+
+int16_t CPU::CalculateOffset(uint16_t imm, Opcode opcode) {
+  if (opcode == Opcode::LOAD || opcode == Opcode::STORE) {
     // Process as an 8-bit immediate
     return static_cast<int16_t>(static_cast<int8_t>(imm));
   } else {
     // Process as a 9-bit immediate
-    imm &= 0x1FF;  // Assume 9-bit immediate when using uint16_t
+    imm &= 0x1FF;
     imm = (imm & 0x100) ? (imm | ~0x1FF) : imm;  // Sign extend to 16 bits
     return static_cast<int16_t>(imm);
   }
