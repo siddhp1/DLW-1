@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 
 TEST(MemoryReadWriteTest, ReadWriteSameBank) {
-  Memory memory{};
+  Memory memory;
   EXPECT_EQ(memory.GetCurrentBank(), 0);
 
   memory.WriteByte(128, 25);
@@ -11,7 +11,7 @@ TEST(MemoryReadWriteTest, ReadWriteSameBank) {
 }
 
 TEST(MemoryReadWriteTest, ReadWriteDifferentBanks) {
-  Memory memory{};
+  Memory memory;
   EXPECT_EQ(memory.GetCurrentBank(), 0);
 
   memory.WriteByte(128, 25);

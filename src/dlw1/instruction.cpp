@@ -19,8 +19,8 @@ std::ostream& operator<<(std::ostream& os, const AddressingMode& mode) {
   }
 }
 
-std::ostream& operator<<(std::ostream& os, const Opcode& code) {
-  switch (code) {
+std::ostream& operator<<(std::ostream& os, const Opcode& opcode) {
+  switch (opcode) {
     case Opcode::ADD:
       return os << "ADD";
     case Opcode::SUB:
@@ -58,9 +58,9 @@ std::ostream& operator<<(std::ostream& os, const RegisterId& id) {
 }
 
 std::ostream& operator<<(std::ostream& os, const Instruction& ins) {
-  os << "Encoded: 0x" << std::hex << ins.encoded << " 0b" << std::dec
-     << std::bitset<16>(ins.encoded) << std::endl;
-  os << "Mode: " << ins.mode << std::endl;
+  os << "Raw: 0x" << std::hex << ins.raw << " 0b" << std::dec
+     << std::bitset<16>(ins.raw) << std::endl;
+  os << "Addressing Mode: " << ins.mode << std::endl;
   os << "Opcode: " << ins.opcode << std::endl;
 
   switch (ins.mode) {
@@ -79,7 +79,7 @@ std::ostream& operator<<(std::ostream& os, const Instruction& ins) {
         os << "Src: " << ins.src2 << std::endl;
       }
       os << "Base: " << ins.src << std::endl;
-      os << "Offset: " << CPU::CalculateOffset(ins.imm, ins.opcode) << std::endl;
+      os << "Offset: " << Cpu::CalculateOffset(ins.imm, ins.opcode) << std::endl;
       if (ins.opcode == Opcode::LOAD) {
         os << "Dest: " << ins.dest << std::endl;
       }

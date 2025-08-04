@@ -8,21 +8,20 @@
 #include "dlw1/memory.hpp"
 
 void Emulator::LoadProgram(const std::string& file_path) {
-  std::ifstream program_file(file_path, std::ios::binary);
-
-  if (!program_file) {
+  std::ifstream program(file_path, std::ios::binary);
+  if (!program) {
     // Add error handling here
   }
 
-  uint8_t address = 0;
+  uint8_t addr = 0;
   size_t bytes_read = 0;
 
   uint8_t byte = 0;
-  while (program_file.read(reinterpret_cast<char*>(&byte), 1)) {
-    memory.WriteByte(address++, byte);
+  while (program.read(reinterpret_cast<char*>(&byte), 1)) {
+    memory.WriteByte(addr++, byte);
 
-    if (address == 255) {
-      address = 0;
+    if (addr == 255) {
+      addr = 0;
       memory.SetCurrentBank(memory.GetCurrentBank() + 1);
     }
 
@@ -35,13 +34,13 @@ void Emulator::LoadProgram(const std::string& file_path) {
 void Emulator::Run() {
   std::cout << memory;
 
-  while (!cpu.halted) {
+  while (!cpu.GetHalted()) {
     cpu.Fetch(memory);
 
-    Instruction instruction = cpu.Decode();
-    std::cout << instruction << std::endl;
+    Instruction ins = cpu.Decode();
+    std::cout << ins << std::endl;
 
-    cpu.Execute(instruction, memory);
+    cpu.Execute(ins, memory);
 
     // Add logging for each cycle
   }

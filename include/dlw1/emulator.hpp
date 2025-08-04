@@ -8,11 +8,11 @@
 
 class Emulator {
  private:
-  CPU cpu;
+  Cpu cpu;
   Memory memory;
 
  public:
-  void LoadProgram(const std::string& filename);
+  void LoadProgram(const std::string& file_path);
   void Run();
 };
 

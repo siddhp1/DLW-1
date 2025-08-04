@@ -5,8 +5,8 @@
 #include <iostream>
 
 enum class AddressingMode {
-  REGISTER,
   IMMEDIATE,
+  REGISTER,
   RELATIVE,
   NONE,
 };
@@ -27,7 +27,7 @@ enum class RegisterId : uint8_t {
   B = 0b01,
   C = 0b10,
   D = 0b11,
-  NONE = 0b11 + 1,  // For creating instances of Instruction
+  NONE = 0b11 + 1,  // Default value
 };
 
 struct Instruction {
@@ -42,7 +42,7 @@ struct Instruction {
   // which will be 9 bits
   uint16_t imm;
 
-  uint16_t encoded;  // Raw instruction
+  uint16_t raw;
 };
 
 std::ostream& operator<<(std::ostream& os, const Instruction& ins);

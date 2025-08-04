@@ -7,7 +7,7 @@
 #include "dlw1/instruction.hpp"
 #include "dlw1/memory.hpp"
 
-class CPUDecodeTest
+class CpuDecodeTest
     : public ::testing::TestWithParam<
           std::tuple<uint16_t,        // Raw instruction
                      AddressingMode,  // Expected addressing mode
@@ -17,11 +17,11 @@ class CPUDecodeTest
                      RegisterId,      // Expected dest
                      uint16_t>> {};   // Expected imm
 
-TEST_P(CPUDecodeTest, DecodeInstruction) {
+TEST_P(CpuDecodeTest, DecodeInstruction) {
   const auto& [raw, expected_mode, expected_opcode, expected_src, expected_src2,
                expected_dest, expected_imm] = GetParam();
 
-  CPU cpu{{0, 0, 0, 0}, raw, 0, 0, false};
+  Cpu cpu{{0, 0, 0, 0}, raw, 0, 0, false};
 
   Instruction instruction = cpu.Decode();
 
@@ -31,11 +31,11 @@ TEST_P(CPUDecodeTest, DecodeInstruction) {
   EXPECT_EQ(instruction.src2, expected_src2);
   EXPECT_EQ(instruction.dest, expected_dest);
   EXPECT_EQ(instruction.imm, expected_imm);
-  EXPECT_EQ(instruction.encoded, raw);
+  EXPECT_EQ(instruction.raw, raw);
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    ADD, CPUDecodeTest,
+    ADD, CpuDecodeTest,
     ::testing::Values(std::make_tuple(0b0000010011000001,
                                       AddressingMode::IMMEDIATE, Opcode::ADD,
                                       RegisterId::A, RegisterId::NONE,
@@ -46,7 +46,7 @@ INSTANTIATE_TEST_SUITE_P(
                                       RegisterId::C, 0)));
 
 INSTANTIATE_TEST_SUITE_P(
-    SUB, CPUDecodeTest,
+    SUB, CpuDecodeTest,
     ::testing::Values(std::make_tuple(0b0000010011000011,
                                       AddressingMode::IMMEDIATE, Opcode::SUB,
                                       RegisterId::A, RegisterId::NONE,
@@ -57,7 +57,7 @@ INSTANTIATE_TEST_SUITE_P(
                                       RegisterId::C, 0)));
 
 INSTANTIATE_TEST_SUITE_P(
-    LOAD, CPUDecodeTest,
+    LOAD, CpuDecodeTest,
     ::testing::Values(
         std::make_tuple(0b0100001000000101, AddressingMode::IMMEDIATE,
                         Opcode::LOAD, RegisterId::NONE, RegisterId::NONE,
@@ -73,7 +73,7 @@ INSTANTIATE_TEST_SUITE_P(
                         8)));
 
 INSTANTIATE_TEST_SUITE_P(
-    STORE, CPUDecodeTest,
+    STORE, CpuDecodeTest,
     ::testing::Values(
         std::make_tuple(0b1100001000000111, AddressingMode::IMMEDIATE,
                         Opcode::STORE, RegisterId::A, RegisterId::NONE,
@@ -86,7 +86,7 @@ INSTANTIATE_TEST_SUITE_P(
                         RegisterId::NONE, 194)));
 
 INSTANTIATE_TEST_SUITE_P(
-    JUMP, CPUDecodeTest,
+    JUMP, CpuDecodeTest,
     ::testing::Values(
         std::make_tuple(0b1111111100001001, AddressingMode::IMMEDIATE,
                         Opcode::JUMP, RegisterId::NONE, RegisterId::NONE,
@@ -102,7 +102,7 @@ INSTANTIATE_TEST_SUITE_P(
                         0)));
 
 INSTANTIATE_TEST_SUITE_P(
-    JUMPZ, CPUDecodeTest,
+    JUMPZ, CpuDecodeTest,
     ::testing::Values(
         std::make_tuple(0b1111111100001011, AddressingMode::IMMEDIATE,
                         Opcode::JUMPZ, RegisterId::NONE, RegisterId::NONE,
@@ -115,7 +115,7 @@ INSTANTIATE_TEST_SUITE_P(
                         RegisterId::NONE, 255)));
 
 INSTANTIATE_TEST_SUITE_P(
-    JUMPNZ, CPUDecodeTest,
+    JUMPNZ, CpuDecodeTest,
     ::testing::Values(
         std::make_tuple(0b1111111100001101, AddressingMode::IMMEDIATE,
                         Opcode::JUMPNZ, RegisterId::NONE, RegisterId::NONE,
@@ -128,7 +128,7 @@ INSTANTIATE_TEST_SUITE_P(
                         RegisterId::NONE, 255)));
 
 INSTANTIATE_TEST_SUITE_P(
-    JUMPN, CPUDecodeTest,
+    JUMPN, CpuDecodeTest,
     ::testing::Values(
         std::make_tuple(0b1111111100001111, AddressingMode::IMMEDIATE,
                         Opcode::JUMPN, RegisterId::NONE, RegisterId::NONE,
@@ -140,7 +140,7 @@ INSTANTIATE_TEST_SUITE_P(
                         Opcode::JUMPN, RegisterId::NONE, RegisterId::NONE,
                         RegisterId::NONE, 255)));
 
-class CPUExecuteTest
+class CpuExecuteTest
     : public ::testing::TestWithParam<std::tuple<
           std::array<uint8_t, 4>,                         // Initial registers
           uint8_t,                                        // Initial pc
@@ -153,13 +153,13 @@ class CPUExecuteTest
           bool,                                           // Expected halted
           std::vector<std::pair<uint8_t, uint8_t>>>> {};  // Expected memory
 
-TEST_P(CPUExecuteTest, ExecuteInstruction) {
+TEST_P(CpuExecuteTest, ExecuteInstruction) {
   const auto& [initial_registers, initial_pc, initial_psw, initial_memory,
                instruction, expected_registers, expected_pc, expected_psw,
                expected_halted, expected_memory] = GetParam();
 
-  CPU cpu{initial_registers, 0, initial_pc, initial_psw, false};
-  Memory memory{};
+  Cpu cpu{initial_registers, 0, initial_pc, initial_psw, false};
+  Memory memory;
 
   for (const auto& [addr, val] : initial_memory) {
     memory.WriteByte(addr, val);
@@ -178,11 +178,11 @@ TEST_P(CPUExecuteTest, ExecuteInstruction) {
 
   EXPECT_EQ(cpu.GetPc(), expected_pc);
   EXPECT_EQ(cpu.GetPsw(), expected_psw);
-  EXPECT_EQ(cpu.halted, expected_halted);
+  EXPECT_EQ(cpu.GetHalted(), expected_halted);
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    ADD, CPUExecuteTest,
+    ADD, CpuExecuteTest,
     ::testing::Values(
         // ADD Immediate: A(5) + 10 = D(15)
         std::make_tuple(std::array<uint8_t, 4>{5, 0, 0, 0}, 0, 0,
@@ -202,27 +202,27 @@ INSTANTIATE_TEST_SUITE_P(
                         std::vector<std::pair<uint8_t, uint8_t>>{})));
 
 INSTANTIATE_TEST_SUITE_P(
-    SUB, CPUExecuteTest,
+    SUB, CpuExecuteTest,
     ::testing::Values(
-        // SUB Immediate: A(20) - 5 = D(15)
+        // SUB Immediate: A(20) - 20 = D(0)
         std::make_tuple(std::array<uint8_t, 4>{20, 0, 0, 0}, 0, 0,
                         std::vector<std::pair<uint8_t, uint8_t>>{},
                         Instruction{AddressingMode::IMMEDIATE, Opcode::SUB,
                                     RegisterId::A, RegisterId::NONE,
-                                    RegisterId::D, 5, 0},
-                        std::array<uint8_t, 4>{20, 0, 0, 15}, 0, 0, false,
+                                    RegisterId::D, 20, 0},
+                        std::array<uint8_t, 4>{20, 0, 0, 0}, 0, 0b01, false,
                         std::vector<std::pair<uint8_t, uint8_t>>{}),
-        // SUB Register: A(20) - B(5) = C(15)
-        std::make_tuple(std::array<uint8_t, 4>{20, 5, 0, 0}, 0, 0,
+        // SUB Register: A(5) - B(20) = C(-15)
+        std::make_tuple(std::array<uint8_t, 4>{5, 20, 0, 0}, 0, 0,
                         std::vector<std::pair<uint8_t, uint8_t>>{},
                         Instruction{AddressingMode::REGISTER, Opcode::SUB,
                                     RegisterId::A, RegisterId::B, RegisterId::C,
                                     0, 0},
-                        std::array<uint8_t, 4>{20, 5, 15, 0}, 0, 0, false,
-                        std::vector<std::pair<uint8_t, uint8_t>>{})));
+                        std::array<uint8_t, 4>{5, 20, 0b11110001, 0}, 0, 0b10,
+                        false, std::vector<std::pair<uint8_t, uint8_t>>{})));
 
 INSTANTIATE_TEST_SUITE_P(
-    LOAD, CPUExecuteTest,
+    LOAD, CpuExecuteTest,
     ::testing::Values(
         // LOAD Immediate: Load value at addr 15 into A
         std::make_tuple(std::array<uint8_t, 4>{0, 0, 0, 0}, 0, 0,
@@ -250,7 +250,7 @@ INSTANTIATE_TEST_SUITE_P(
                         std::vector<std::pair<uint8_t, uint8_t>>{{15, 42}})));
 
 INSTANTIATE_TEST_SUITE_P(
-    STORE, CPUExecuteTest,
+    STORE, CpuExecuteTest,
     ::testing::Values(
         // STORE Immediate: Store A(42) at address 100
         std::make_tuple(std::array<uint8_t, 4>{42, 0, 0, 0}, 0, 0,
@@ -278,7 +278,7 @@ INSTANTIATE_TEST_SUITE_P(
                         std::vector<std::pair<uint8_t, uint8_t>>{{100, 42}})));
 
 INSTANTIATE_TEST_SUITE_P(
-    JUMP, CPUExecuteTest,
+    JUMP, CpuExecuteTest,
     ::testing::Values(
         // JUMP Immediate: Jump to address 42
         std::make_tuple(std::array<uint8_t, 4>{0, 0, 0, 0}, 0, 0,
@@ -304,7 +304,7 @@ INSTANTIATE_TEST_SUITE_P(
                                     RegisterId::NONE, 10, 0},
                         std::array<uint8_t, 4>{0, 0, 0, 0}, 15, 0, false,
                         std::vector<std::pair<uint8_t, uint8_t>>{}),
-        // HALT: Halt the CPU
+        // HALT: Halt the Cpu
         std::make_tuple(std::array<uint8_t, 4>{0, 0, 0, 0}, 0, 0,
                         std::vector<std::pair<uint8_t, uint8_t>>{},
                         Instruction{AddressingMode::NONE, Opcode::JUMP,
@@ -314,7 +314,7 @@ INSTANTIATE_TEST_SUITE_P(
                         std::vector<std::pair<uint8_t, uint8_t>>{})));
 
 INSTANTIATE_TEST_SUITE_P(
-    JUMPZ, CPUExecuteTest,
+    JUMPZ, CpuExecuteTest,
     ::testing::Values(
         // JUMPZ Immediate when Z flag is set: Jump to 42
         std::make_tuple(std::array<uint8_t, 4>{0, 0, 0, 0}, 0, 0b01,
@@ -334,7 +334,7 @@ INSTANTIATE_TEST_SUITE_P(
                         std::vector<std::pair<uint8_t, uint8_t>>{})));
 
 INSTANTIATE_TEST_SUITE_P(
-    JUMPNZ, CPUExecuteTest,
+    JUMPNZ, CpuExecuteTest,
     ::testing::Values(
         // JUMPNZ Immediate when Z flag is not set: Jump to 42
         std::make_tuple(std::array<uint8_t, 4>{0, 0, 0, 0}, 0, 0b00,
@@ -355,7 +355,7 @@ INSTANTIATE_TEST_SUITE_P(
                         std::vector<std::pair<uint8_t, uint8_t>>{})));
 
 INSTANTIATE_TEST_SUITE_P(
-    JUMPN, CPUExecuteTest,
+    JUMPN, CpuExecuteTest,
     ::testing::Values(
         // JUMPN Immediate when N flag is set: Jump to 42
         std::make_tuple(std::array<uint8_t, 4>{0, 0, 0, 0}, 0, 0b10,
@@ -374,9 +374,9 @@ INSTANTIATE_TEST_SUITE_P(
                         std::array<uint8_t, 4>{0, 0, 0, 0}, 0, 0b01, false,
                         std::vector<std::pair<uint8_t, uint8_t>>{})));
 
-TEST(CPUFetchTest, FetchInstruction) {
-  CPU cpu;
-  Memory memory{};
+TEST(CpuFetchTest, FetchInstruction) {
+  Cpu cpu;
+  Memory memory;
 
   memory.WriteByte(0, 0b01111111);
   memory.WriteByte(1, 0b10011111);
@@ -387,50 +387,50 @@ TEST(CPUFetchTest, FetchInstruction) {
   EXPECT_EQ(cpu.GetPc(), 2);
 }
 
-class CPUCalculateLoadStoreOffsetTest
+class CpuCalculateLoadStoreOffsetTest
     : public ::testing::TestWithParam<Opcode> {};
 
-TEST_P(CPUCalculateLoadStoreOffsetTest, CalculatePositiveOffset) {
+TEST_P(CpuCalculateLoadStoreOffsetTest, CalculatePositiveOffset) {
   uint16_t immediate = 0b01010101;
-  int8_t offset = CPU::CalculateOffset(immediate, GetParam());
+  int8_t offset = Cpu::CalculateOffset(immediate, GetParam());
   EXPECT_EQ(offset, 85);
 }
 
-TEST_P(CPUCalculateLoadStoreOffsetTest, CalculateNegativeOffset) {
+TEST_P(CpuCalculateLoadStoreOffsetTest, CalculateNegativeOffset) {
   uint16_t immediate = 0b11010101;
-  int8_t offset = CPU::CalculateOffset(immediate, GetParam());
+  int8_t offset = Cpu::CalculateOffset(immediate, GetParam());
   EXPECT_EQ(offset, -43);
 }
 
-TEST_P(CPUCalculateLoadStoreOffsetTest, CalculateZeroOffset) {
+TEST_P(CpuCalculateLoadStoreOffsetTest, CalculateZeroOffset) {
   uint16_t immediate = 0b00000000;
-  int8_t offset = CPU::CalculateOffset(immediate, GetParam());
+  int8_t offset = Cpu::CalculateOffset(immediate, GetParam());
   EXPECT_EQ(offset, 0);
 }
 
-INSTANTIATE_TEST_SUITE_P(LOADSTORE, CPUCalculateLoadStoreOffsetTest,
+INSTANTIATE_TEST_SUITE_P(LOADSTORE, CpuCalculateLoadStoreOffsetTest,
                          ::testing::Values(Opcode::LOAD, Opcode::STORE));
 
-class CPUCalculateJumpOffsetTest : public ::testing::TestWithParam<Opcode> {};
+class CpuCalculateJumpOffsetTest : public ::testing::TestWithParam<Opcode> {};
 
-TEST_P(CPUCalculateJumpOffsetTest, CalculatePositiveOffset) {
+TEST_P(CpuCalculateJumpOffsetTest, CalculatePositiveOffset) {
   uint16_t immediate = 0b010000010;
-  int16_t offset = CPU::CalculateOffset(immediate, GetParam());
+  int16_t offset = Cpu::CalculateOffset(immediate, GetParam());
   EXPECT_EQ(offset, 130);
 }
 
-TEST_P(CPUCalculateJumpOffsetTest, CalculateNegativeOffset) {
+TEST_P(CpuCalculateJumpOffsetTest, CalculateNegativeOffset) {
   uint16_t immediate = 0b100000110;
-  int16_t offset = CPU::CalculateOffset(immediate, GetParam());
+  int16_t offset = Cpu::CalculateOffset(immediate, GetParam());
   EXPECT_EQ(offset, -250);
 }
 
-TEST_P(CPUCalculateJumpOffsetTest, CalculateZeroOffset) {
+TEST_P(CpuCalculateJumpOffsetTest, CalculateZeroOffset) {
   uint16_t immediate = 0b000000000;
-  int16_t offset = CPU::CalculateOffset(immediate, GetParam());
+  int16_t offset = Cpu::CalculateOffset(immediate, GetParam());
   EXPECT_EQ(offset, 0);
 }
 
-INSTANTIATE_TEST_SUITE_P(JUMP, CPUCalculateJumpOffsetTest,
+INSTANTIATE_TEST_SUITE_P(JUMP, CpuCalculateJumpOffsetTest,
                          ::testing::Values(Opcode::JUMP, Opcode::JUMPZ,
                                            Opcode::JUMPNZ, Opcode::JUMPN));

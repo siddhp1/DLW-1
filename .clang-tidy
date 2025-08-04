@@ -1,0 +1,16 @@
+Checks: >
+  clang-analyzer-*,
+  bugprone-*,
+  performance-*,
+  readability-*,
+  modernize-*,
+  misc-*,
+  cppcoreguidelines-*,
+  -cppcoreguidelines-macro-usage,
+  -hicpp-vararg,
+  -modernize-use-trailing-return-type
+  -readability-function-cognitive-complexity,
+
+HeaderFilterRegex: ''
+WarningsAsErrors: ''
+FormatStyle: none
