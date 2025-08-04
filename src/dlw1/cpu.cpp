@@ -2,11 +2,11 @@
 
 #include "dlw1/instruction.hpp"
 
-uint8_t CPU::ReadRegister(const RegisterId register_id) const {
-  return gpr[static_cast<size_t>(register_id)];
+uint8_t Cpu::ReadRegister(const RegisterId id) const {
+  return gpr[static_cast<size_t>(id)];
 }
 
-void CPU::UpdateProcessorStatusWord(const uint8_t result) {
+void Cpu::UpdateProcessorStatusWord(const uint8_t result) {
   psw = 0;
   if (result == 0) {
     psw |= 0b1;
@@ -15,16 +15,16 @@ void CPU::UpdateProcessorStatusWord(const uint8_t result) {
   }
 }
 
-void CPU::WriteRegister(const RegisterId register_id, const uint8_t value) {
-  gpr[static_cast<size_t>(register_id)] = value;
+void Cpu::WriteRegister(const RegisterId id, const uint8_t value) {
+  gpr[static_cast<size_t>(id)] = value;
 }
 
-Instruction CPU::Decode() const {
+Instruction Cpu::Decode() const {
   Instruction ins{};
 
-  ins.encoded = ir;
+  ins.raw = ir;
 
-  bool mode_flag = ir & 0b1;
+  bool mode_bit = ir & 0b1;
 
   uint8_t opcode_bits = (ir >> 1) & 0b111;
   ins.opcode = static_cast<Opcode>(opcode_bits);
@@ -32,7 +32,7 @@ Instruction CPU::Decode() const {
   switch (ins.opcode) {
     case Opcode::ADD:
     case Opcode::SUB:
-      if (mode_flag) {
+      if (mode_bit) {
         ins.mode = AddressingMode::IMMEDIATE;
         ins.src = static_cast<RegisterId>((ir >> 4) & 0b11);
         ins.dest = static_cast<RegisterId>((ir >> 6) & 0b11);
@@ -45,7 +45,7 @@ Instruction CPU::Decode() const {
       }
       break;
     case Opcode::LOAD:
-      if (mode_flag) {
+      if (mode_bit) {
         if (((ir >> 4) & 0b11) == 0) {
           ins.mode = AddressingMode::IMMEDIATE;
           ins.dest = static_cast<RegisterId>((ir >> 6) & 0b11);
@@ -67,7 +67,7 @@ Instruction CPU::Decode() const {
       }
       break;
     case Opcode::STORE:
-      if (mode_flag) {
+      if (mode_bit) {
         if (((ir >> 4) & 0b11) == 0) {
           ins.mode = AddressingMode::IMMEDIATE;
           ins.src = static_cast<RegisterId>((ir >> 6) & 0b11);
@@ -88,7 +88,7 @@ Instruction CPU::Decode() const {
     case Opcode::JUMPZ:
     case Opcode::JUMPNZ:
     case Opcode::JUMPN:
-      if (mode_flag) {
+      if (mode_bit) {
         if (((ir >> 4) & 0b11) == 0) {
           ins.mode = AddressingMode::IMMEDIATE;
           ins.imm = (ir >> 8) & 0xFF;
@@ -110,60 +110,60 @@ Instruction CPU::Decode() const {
   return ins;
 }
 
-void CPU::Execute(const Instruction& instruction, Memory& memory) {
-  switch (instruction.opcode) {
+void Cpu::Execute(const Instruction& ins, Memory& memory) {
+  switch (ins.opcode) {
     case Opcode::ADD:
     case Opcode::SUB: {
-      uint8_t operand_a = ReadRegister(instruction.src);
+      uint8_t x = ReadRegister(ins.src);
 
-      uint8_t operand_b = (instruction.mode == AddressingMode::IMMEDIATE)
-                              ? instruction.imm
-                              : ReadRegister(instruction.src2);
+      uint8_t y = (ins.mode == AddressingMode::IMMEDIATE)
+                              ? ins.imm
+                              : ReadRegister(ins.src2);
 
-      uint8_t result = (instruction.opcode == Opcode::ADD)
-                           ? operand_a + operand_b
-                           : operand_a - operand_b;
+      uint8_t result = (ins.opcode == Opcode::ADD)
+                           ? x + y
+                           : x - y;
 
-      WriteRegister(instruction.dest, result);
+      WriteRegister(ins.dest, result);
       UpdateProcessorStatusWord(result);
       break;
     }
     case Opcode::LOAD:
-      switch (instruction.mode) {
+      switch (ins.mode) {
         case AddressingMode::IMMEDIATE:
-          WriteRegister(instruction.dest, memory.ReadByte(instruction.imm));
+          WriteRegister(ins.dest, memory.ReadByte(ins.imm));
           break;
         case AddressingMode::REGISTER:
-          WriteRegister(instruction.dest,
-                        memory.ReadByte(ReadRegister(instruction.src)));
+          WriteRegister(ins.dest,
+                        memory.ReadByte(ReadRegister(ins.src)));
           break;
         case AddressingMode::RELATIVE: {
-          uint8_t address =
-              ReadRegister(instruction.src) +
-              CalculateOffset(instruction.imm, instruction.opcode);
-          WriteRegister(instruction.dest, memory.ReadByte(address));
+          uint8_t addr =
+              ReadRegister(ins.src) +
+              CalculateOffset(ins.imm, ins.opcode);
+          WriteRegister(ins.dest, memory.ReadByte(addr));
           break;
         }
         case AddressingMode::NONE:
-          memory.SetCurrentBank(instruction.imm);
+          memory.SetCurrentBank(ins.imm);
         default:
           break;
       }
       break;
     case Opcode::STORE:
-      switch (instruction.mode) {
+      switch (ins.mode) {
         case AddressingMode::IMMEDIATE:
-          memory.WriteByte(instruction.imm, ReadRegister(instruction.src));
+          memory.WriteByte(ins.imm, ReadRegister(ins.src));
           break;
         case AddressingMode::REGISTER:
-          memory.WriteByte(ReadRegister(instruction.dest),
-                           ReadRegister(instruction.src));
+          memory.WriteByte(ReadRegister(ins.dest),
+                           ReadRegister(ins.src));
           break;
         case AddressingMode::RELATIVE: {
-          uint8_t address =
-              ReadRegister(instruction.src) +
-              CalculateOffset(instruction.imm, instruction.opcode);
-          memory.WriteByte(address, ReadRegister(instruction.src2));
+          uint8_t addr =
+              ReadRegister(ins.src) +
+              CalculateOffset(ins.imm, ins.opcode);
+          memory.WriteByte(addr, ReadRegister(ins.src2));
           break;
         }
         case AddressingMode::NONE:
@@ -175,17 +175,17 @@ void CPU::Execute(const Instruction& instruction, Memory& memory) {
     case Opcode::JUMPZ:
     case Opcode::JUMPNZ:
     case Opcode::JUMPN: {
-      uint8_t address;
+      uint8_t addr;
 
-      switch (instruction.mode) {
+      switch (ins.mode) {
         case AddressingMode::IMMEDIATE:
-          address = instruction.imm;
+          addr = ins.imm;
           break;
         case AddressingMode::REGISTER:
-          address = ReadRegister(instruction.src);
+          addr = ReadRegister(ins.src);
           break;
         case AddressingMode::RELATIVE: {
-          address = pc + CalculateOffset(instruction.imm, instruction.opcode);
+          addr = pc + CalculateOffset(ins.imm, ins.opcode);
           break;
         }
         case AddressingMode::NONE:
@@ -196,7 +196,7 @@ void CPU::Execute(const Instruction& instruction, Memory& memory) {
       }
 
       bool execute_jump = false;
-      switch (instruction.opcode) {
+      switch (ins.opcode) {
         case Opcode::JUMP:
           execute_jump = true;
           break;
@@ -214,7 +214,7 @@ void CPU::Execute(const Instruction& instruction, Memory& memory) {
       }
 
       if (execute_jump) {
-        pc = address;
+        pc = addr;
       }
 
       break;
@@ -224,23 +224,25 @@ void CPU::Execute(const Instruction& instruction, Memory& memory) {
   }
 }
 
-void CPU::Fetch(const Memory& memory) {
+void Cpu::Fetch(const Memory& memory) {
   uint8_t high = memory.ReadByte(pc++);
   uint8_t low = memory.ReadByte(pc++);
   ir = (high << 8) | low;
 }
 
-uint16_t CPU::GetIr() const { return ir; }
+bool Cpu::GetHalted() const { return halted; }
 
-uint8_t CPU::GetPc() const { return pc; }
+uint16_t Cpu::GetIr() const { return ir; }
 
-uint8_t CPU::GetPsw() const { return psw; }
+uint8_t Cpu::GetPc() const { return pc; }
 
-uint8_t CPU::GetRegister(RegisterId register_id) const {
-  return ReadRegister(register_id);
+uint8_t Cpu::GetPsw() const { return psw; }
+
+uint8_t Cpu::GetRegister(RegisterId id) const {
+  return ReadRegister(id);
 }
 
-int16_t CPU::CalculateOffset(uint16_t imm, Opcode opcode) {
+int16_t Cpu::CalculateOffset(uint16_t imm, Opcode opcode) {
   if (opcode == Opcode::LOAD || opcode == Opcode::STORE) {
     // Process as an 8-bit immediate
     return static_cast<int16_t>(static_cast<int8_t>(imm));

@@ -3,10 +3,10 @@
 #include "dlw1/emulator.hpp"
 
 int main(void) {
-  Emulator emulator{};
+  Emulator em;
 
-  emulator.LoadProgram("sample_program.bin");
-  emulator.Run();
+  em.LoadProgram("sample_program.bin");
+  em.Run();
 
   return 0;
 }
