@@ -11,11 +11,11 @@ TEST(MemoryReadWriteTest, ReadWriteSameBank) {
 }
 
 TEST(MemoryReadWriteTest, ReadWriteDifferentBanks) {
-  Memory memory;
+  Memory memory{2};
   EXPECT_EQ(memory.GetCurrentBank(), 0);
 
   memory.WriteByte(128, 25);
-  memory.SetCurrentBank(2);
+  memory.SetCurrentBank(1);
 
   memory.WriteByte(128, 50);
   EXPECT_EQ(memory.ReadByte(128), 50);

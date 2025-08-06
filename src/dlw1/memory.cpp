@@ -1,9 +1,12 @@
 #include "dlw1/memory.hpp"
 
 #include <bitset>
+#include <cstdint>
 #include <iostream>
 
 uint8_t Memory::GetCurrentBank() const { return curr_bank; }
+
+uint8_t Memory::GetNumBanks() const { return num_banks; }
 
 uint8_t Memory::ReadByte(const uint8_t addr) const {
   // No out of bounds check since addr is always <= bank size

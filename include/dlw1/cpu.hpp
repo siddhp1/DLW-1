@@ -38,4 +38,6 @@ class Cpu {
   static int16_t CalculateOffset(uint16_t imm, Opcode opcode);
 };
 
+// Add overloads for logging CPU state
+
 #endif
