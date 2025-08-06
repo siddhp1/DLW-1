@@ -8,7 +8,7 @@ Checks: >
   cppcoreguidelines-*,
   -cppcoreguidelines-macro-usage,
   -hicpp-vararg,
-  -modernize-use-trailing-return-type
+  -modernize-use-trailing-return-type,
   -readability-function-cognitive-complexity,
 
 HeaderFilterRegex: ''

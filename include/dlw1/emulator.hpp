@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "config.hpp"
 #include "cpu.hpp"
 #include "memory.hpp"
 
@@ -10,9 +11,13 @@ class Emulator {
  private:
   Cpu cpu;
   Memory memory;
+  Config config;
 
  public:
-  void LoadProgram(const std::string& file_path);
+  explicit Emulator(const Config& config)
+      : config{config}, memory{config.num_banks} {};
+
+  void LoadProgram();
   void Run();
 };
 
