@@ -1,11 +1,13 @@
 #include <cstdint>
 #include <cxxopts.hpp>
 #include <iostream>
+#include <string>
 
+#include "dlw1/config.hpp"
 #include "dlw1/emulator.hpp"
+#include "logger/logger.hpp"
 
 int main(int argc, char* argv[]) {
-  // Note: logging verbosity option is not yet implemented
   cxxopts::Options options("DLW-1", "DLW-1 CPU Microarchitecture Emulator");
   options.add_options()("f,file", "Path to the program file to execute",
                         cxxopts::value<std::string>())(
@@ -14,9 +16,14 @@ int main(int argc, char* argv[]) {
           std::to_string(Config::DEFAULT_NUM_BANKS) +
           ", range: " + std::to_string(Config::MIN_BANKS) + "-" +
           std::to_string(Config::MAX_BANKS) + ")",
-      cxxopts::value<uint8_t>()->default_value(std::to_string(
-          Config::DEFAULT_NUM_BANKS)))("version", "Print version information")(
-      "h,help", "Print usage information");
+      cxxopts::value<uint8_t>()->default_value(
+          std::to_string(Config::DEFAULT_NUM_BANKS)))(
+      "c,console-level", "Console log level [debug, info, warn, error, off]",
+      cxxopts::value<std::string>()->default_value("info"))(
+      "l,file-level", "File log level [debug, info, warn, error, off]",
+      cxxopts::value<std::string>()->default_value("debug"))(
+      "version", "Print version information")("help",
+                                              "Print usage information");
 
   auto result = options.parse(argc, argv);
 
@@ -26,7 +33,7 @@ int main(int argc, char* argv[]) {
   }
 
   if (result.count("version")) {
-    // Get the version from CMake and output it here
+    // Get the version from CMake
     return 0;
   }
 
@@ -36,9 +43,9 @@ int main(int argc, char* argv[]) {
     // Add error handling here for no program file
     // return 1;
     config.program_file_path = "sample_program.bin";
+  } else {
+    // config.program_file_path = result["file"].as<std::string>();
   }
-
-  // config.program_file_path = result["file"].as<std::string>();
   config.num_banks = result["banks"].as<uint8_t>();
 
   if (!config.Validate()) {
@@ -50,6 +57,9 @@ int main(int argc, char* argv[]) {
     // Add error handling here
     return 1;
   }
+
+  Logger::Init(Logger::StringToLevel(result["console-level"].as<std::string>()),
+               Logger::StringToLevel(result["file-level"].as<std::string>()));
 
   Emulator emulator{config};
   emulator.LoadProgram();
