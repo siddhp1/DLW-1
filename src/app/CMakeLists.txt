@@ -1,14 +1,8 @@
-CPMAddPackage(
-  NAME cxxopts
-  GITHUB_REPOSITORY jarro2783/cxxopts
-  GIT_TAG v3.3.1 
-  VERSION v3.3.1
-)
-
 add_executable(dlw1_app main.cpp)
 
-target_link_libraries(dlw1_app PRIVATE dlw1)
-target_link_libraries(dlw1_app PRIVATE cxxopts)
+target_link_libraries(dlw1_app PRIVATE dlw1 logger cxxopts)
+
+target_compile_features(dlw1_app PUBLIC cxx_std_23)
 
 # Temporary solution to exception issue
 add_compile_definitions(CXXOPTS_NO_EXCEPTIONS)
