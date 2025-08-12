@@ -228,6 +228,11 @@ void Cpu::Execute(const Instruction& ins, Memory& memory) {
 }
 
 void Cpu::Fetch(const Memory& memory) {
+  if (pc > 254) {
+    halted = true;
+    return;
+  }
+
   uint8_t high = memory.ReadByte(pc++);
   uint8_t low = memory.ReadByte(pc++);
   ir = (high << 8) | low;

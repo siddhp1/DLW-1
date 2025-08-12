@@ -4,9 +4,6 @@ target_link_libraries(dlw1_app PRIVATE dlw1 logger cxxopts)
 
 target_compile_features(dlw1_app PUBLIC cxx_std_23)
 
-# Temporary solution to exception issue
-add_compile_definitions(CXXOPTS_NO_EXCEPTIONS)
-
 add_custom_target(copy_program ALL 
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
 		"${CMAKE_SOURCE_DIR}/resources/sample_program.bin"
