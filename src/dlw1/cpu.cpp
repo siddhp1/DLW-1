@@ -1,33 +1,42 @@
 #include "dlw1/cpu.hpp"
 
+#include <cstddef>
+#include <cstdint>
+
 #include "dlw1/instruction.hpp"
 #include "dlw1/memory.hpp"
 
-uint8_t Cpu::ReadRegister(const RegisterId id) const {
-  return gpr[static_cast<size_t>(id)];
+// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, hicpp-signed-bitwise,
+// readability-magic-numbers)
+
+uint8_t Cpu::ReadRegister(const RegisterId id) const noexcept {
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
+  return gpr[static_cast<std::size_t>(id)];
 }
 
-void Cpu::UpdateProcessorStatusWord(const uint8_t result) {
+void Cpu::UpdateProcessorStatusWord(const uint8_t result) noexcept {
   psw = 0;
   if (result == 0) {
-    psw |= 0b1;
+    psw |= 0b1U;
   } else if (static_cast<int8_t>(result) < 0) {
-    psw |= 0b10;
+    psw |= 0b10U;
   }
 }
 
-void Cpu::WriteRegister(const RegisterId id, const uint8_t value) {
-  gpr[static_cast<size_t>(id)] = value;
+void Cpu::WriteRegister(const RegisterId id, const uint8_t value) noexcept {
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
+  gpr[static_cast<std::size_t>(id)] = value;
 }
 
-Instruction Cpu::Decode() const {
+Instruction Cpu::Decode() const noexcept {
   Instruction ins{};
 
   ins.raw = ir;
 
-  bool mode_bit = ir & 0b1;
+  // NOLINTNEXTLINE(readability-implicit-bool-conversion)
+  const bool mode_bit = ir & 0b1U;
 
-  uint8_t opcode_bits = (ir >> 1) & 0b111;
+  const uint8_t opcode_bits = (ir >> 1U) & 0b111U;
   ins.opcode = static_cast<Opcode>(opcode_bits);
 
   switch (ins.opcode) {
@@ -35,59 +44,59 @@ Instruction Cpu::Decode() const {
     case Opcode::SUB:
       if (mode_bit) {
         ins.mode = AddressingMode::IMMEDIATE;
-        ins.src = static_cast<RegisterId>((ir >> 4) & 0b11);
-        ins.dest = static_cast<RegisterId>((ir >> 6) & 0b11);
-        ins.imm = (ir >> 8) & 0b11111111;
+        ins.src = static_cast<RegisterId>((ir >> 4U) & 0b11U);
+        ins.dest = static_cast<RegisterId>((ir >> 6U) & 0b11U);
+        ins.imm = (ir >> 8U) & 0xFFU;
       } else {
         ins.mode = AddressingMode::REGISTER;
-        ins.src = static_cast<RegisterId>((ir >> 4) & 0b11);
-        ins.src2 = static_cast<RegisterId>((ir >> 6) & 0b11);
-        ins.dest = static_cast<RegisterId>((ir >> 8) & 0b11);
+        ins.src = static_cast<RegisterId>((ir >> 4U) & 0b11U);
+        ins.src2 = static_cast<RegisterId>((ir >> 6U) & 0b11U);
+        ins.dest = static_cast<RegisterId>((ir >> 8U) & 0b11U);
       }
       break;
     case Opcode::LOAD:
       if (mode_bit) {
-        if (((ir >> 4) & 0b11) == 0) {
+        if (((ir >> 4U) & 0b11U) == 0) {
           ins.mode = AddressingMode::IMMEDIATE;
-          ins.dest = static_cast<RegisterId>((ir >> 6) & 0b11);
-          ins.imm = (ir >> 8) & 0b11111111;
+          ins.dest = static_cast<RegisterId>((ir >> 6U) & 0b11U);
+          ins.imm = (ir >> 8U) & 0xFFU;
         } else {
           ins.mode = AddressingMode::RELATIVE;
-          ins.src = static_cast<RegisterId>((ir >> 4) & 0b11);
-          ins.dest = static_cast<RegisterId>((ir >> 6) & 0b11);
-          ins.imm = (ir >> 8) & 0b11111111;
+          ins.src = static_cast<RegisterId>((ir >> 4U) & 0b11U);
+          ins.dest = static_cast<RegisterId>((ir >> 6U) & 0b11U);
+          ins.imm = (ir >> 8U) & 0xFFU;
         }
       } else {
-        if (((ir >> 6) & 0b11) == 0) {
+        if (((ir >> 6U) & 0b11U) == 0) {
           ins.mode = AddressingMode::REGISTER;
-          ins.src = static_cast<RegisterId>((ir >> 4) & 0b11);
-          ins.dest = static_cast<RegisterId>((ir >> 8) & 0b11);
+          ins.src = static_cast<RegisterId>((ir >> 4U) & 0b11U);
+          ins.dest = static_cast<RegisterId>((ir >> 8U) & 0b11U);
         } else {
-          ins.imm = (ir >> 8) & 0xFF;  // Bank switch
+          ins.imm = (ir >> 8U) & 0xFFU;  // Bank switch
         }
       }
       break;
     case Opcode::STORE:
       if (mode_bit) {
-        if (((ir >> 4) & 0b11) == 0) {
+        if (((ir >> 4U) & 0b11U) == 0) {
           ins.mode = AddressingMode::IMMEDIATE;
-          ins.src = static_cast<RegisterId>((ir >> 6) & 0b11);
-          ins.imm = (ir >> 8) & 0b11111111;
+          ins.src = static_cast<RegisterId>((ir >> 6U) & 0b11U);
+          ins.imm = (ir >> 8U) & 0xFFU;
         } else {
           ins.mode = AddressingMode::RELATIVE;
-          ins.src = static_cast<RegisterId>((ir >> 4) & 0b11);
-          ins.src2 = static_cast<RegisterId>((ir >> 6) & 0b11);
-          ins.imm = (ir >> 8) & 0b11111111;
+          ins.src = static_cast<RegisterId>((ir >> 4U) & 0b11U);
+          ins.src2 = static_cast<RegisterId>((ir >> 6U) & 0b11U);
+          ins.imm = (ir >> 8U) & 0xFFU;
         }
       } else {
-        if (((ir >> 6) & 0b11) == 0) {
+        if (((ir >> 6U) & 0b11U) == 0) {
           ins.mode = AddressingMode::REGISTER;
-          ins.src = static_cast<RegisterId>((ir >> 4) & 0b11);
-          ins.dest = static_cast<RegisterId>((ir >> 8) & 0b11);
+          ins.src = static_cast<RegisterId>((ir >> 4U) & 0b11U);
+          ins.dest = static_cast<RegisterId>((ir >> 8U) & 0b11U);
         } else {
           ins.mode = AddressingMode::NONE;
-          ins.src = static_cast<RegisterId>((ir >> 4) & 0b11);
-          ins.dest = static_cast<RegisterId>((ir >> 8) & 0b11);
+          ins.src = static_cast<RegisterId>((ir >> 4U) & 0b11U);
+          ins.dest = static_cast<RegisterId>((ir >> 8U) & 0b11U);
         }
       }
       break;
@@ -96,18 +105,18 @@ Instruction Cpu::Decode() const {
     case Opcode::JUMPNZ:
     case Opcode::JUMPN:
       if (mode_bit) {
-        if (((ir >> 4) & 0b11) == 0) {
+        if (((ir >> 4U) & 0b11U) == 0) {
           ins.mode = AddressingMode::IMMEDIATE;
-          ins.imm = (ir >> 8) & 0xFF;
+          ins.imm = (ir >> 8U) & 0xFFU;
         } else {
           ins.mode = AddressingMode::RELATIVE;
           ins.imm =
-              (ir >> 7) & 0x1FF;  // Using 9-bit immedaite for relative jumps
+              (ir >> 7U) & 0x1FFU;  // Using 9-bit immedaite for relative jumps
         }
       } else {
-        if ((ir >> 6) == 0) {
+        if ((ir >> 6U) == 0) {
           ins.mode = AddressingMode::REGISTER;
-          ins.src = static_cast<RegisterId>((ir >> 4) & 0b11);
+          ins.src = static_cast<RegisterId>((ir >> 4U) & 0b11U);
         } else {
           break;  // Halt
         }
@@ -117,7 +126,7 @@ Instruction Cpu::Decode() const {
   return ins;
 }
 
-void Cpu::Execute(const Instruction& ins, Memory& memory) {
+void Cpu::Execute(const Instruction& ins, Memory& memory) noexcept {
   switch (ins.opcode) {
     case Opcode::ADD:
     case Opcode::SUB: {
@@ -178,7 +187,7 @@ void Cpu::Execute(const Instruction& ins, Memory& memory) {
     case Opcode::JUMPZ:
     case Opcode::JUMPNZ:
     case Opcode::JUMPN: {
-      uint8_t addr;
+      uint8_t addr{};
 
       switch (ins.mode) {
         case AddressingMode::IMMEDIATE:
@@ -227,35 +236,41 @@ void Cpu::Execute(const Instruction& ins, Memory& memory) {
   }
 }
 
-void Cpu::Fetch(const Memory& memory) {
+void Cpu::Fetch(const Memory& memory) noexcept {
   if (pc > 254) {
     halted = true;
     return;
   }
 
-  uint8_t high = memory.ReadByte(pc++);
-  uint8_t low = memory.ReadByte(pc++);
-  ir = (high << 8) | low;
+  const uint8_t high = memory.ReadByte(pc++);
+  const uint8_t low = memory.ReadByte(pc++);
+  ir = (high << 8U) | low;
 }
 
-bool Cpu::GetHalted() const { return halted; }
+bool Cpu::GetHalted() const noexcept { return halted; }
 
-uint16_t Cpu::GetIr() const { return ir; }
+uint16_t Cpu::GetIr() const noexcept { return ir; }
 
-uint8_t Cpu::GetPc() const { return pc; }
+uint8_t Cpu::GetPc() const noexcept { return pc; }
 
-uint8_t Cpu::GetPsw() const { return psw; }
+uint8_t Cpu::GetPsw() const noexcept { return psw; }
 
-uint8_t Cpu::GetRegister(RegisterId id) const { return ReadRegister(id); }
+uint8_t Cpu::GetRegister(RegisterId id) const noexcept {
+  return ReadRegister(id);
+}
 
-int16_t Cpu::CalculateOffset(uint16_t imm, Opcode opcode) {
+int16_t Cpu::CalculateOffset(uint16_t imm, Opcode opcode) noexcept {
   if (opcode == Opcode::LOAD || opcode == Opcode::STORE) {
     // Process as an 8-bit immediate
     return static_cast<int16_t>(static_cast<int8_t>(imm));
   } else {
     // Process as a 9-bit immediate
-    imm &= 0x1FF;
-    imm = (imm & 0x100) ? (imm | ~0x1FF) : imm;  // Sign extend to 16 bits
+    imm &= 0x1FFU;
+    // NOLINTNEXTLINE(readability-implicit-bool-conversion)
+    imm = (imm & 0x100U) ? (imm | ~0x1FFU) : imm;  // Sign extend to 16 bits
     return static_cast<int16_t>(imm);
   }
 }
+
+// NOLINTEND(cppcoreguidelines-avoid-magic-numbers, hicpp-signed-bitwise,
+// readability-magic-numbers)

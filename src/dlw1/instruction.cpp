@@ -1,7 +1,6 @@
 #include "dlw1/instruction.hpp"
 
 #include <bitset>
-#include <cstdint>
 #include <iostream>
 
 #include "dlw1/cpu.hpp"
@@ -58,34 +57,37 @@ std::ostream& operator<<(std::ostream& os, const RegisterId& id) {
 }
 
 std::ostream& operator<<(std::ostream& os, const Instruction& ins) {
+  // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,
+  // readability-magic-numbers)
   os << "Raw: 0x" << std::hex << ins.raw << " 0b" << std::dec
-     << std::bitset<16>(ins.raw) << std::endl;
-  os << "Addressing Mode: " << ins.mode << std::endl;
-  os << "Opcode: " << ins.opcode << std::endl;
+     << std::bitset<16>(ins.raw) << "\n";
+  // NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+  os << "Addressing Mode: " << ins.mode << "\n";
+  os << "Opcode: " << ins.opcode << "\n";
 
   switch (ins.mode) {
     case AddressingMode::REGISTER:
-      os << "Src1: " << ins.src << std::endl;
-      os << "Src2: " << ins.src2 << std::endl;
-      os << "Dest: " << ins.dest << std::endl;
+      os << "Src1: " << ins.src << "\n";
+      os << "Src2: " << ins.src2 << "\n";
+      os << "Dest: " << ins.dest << "\n";
       break;
     case AddressingMode::IMMEDIATE:
-      os << "Src: " << ins.src << std::endl;
-      os << "Imm: " << static_cast<int>(ins.imm) << std::endl;
-      os << "Dest: " << ins.dest << std::endl;
+      os << "Src: " << ins.src << "\n";
+      os << "Imm: " << static_cast<int>(ins.imm) << "\n";
+      os << "Dest: " << ins.dest << "\n";
       break;
     case AddressingMode::RELATIVE:
       if (ins.opcode == Opcode::STORE) {
-        os << "Src: " << ins.src2 << std::endl;
+        os << "Src: " << ins.src2 << "\n";
       }
-      os << "Base: " << ins.src << std::endl;
-      os << "Offset: " << Cpu::CalculateOffset(ins.imm, ins.opcode) << std::endl;
+      os << "Base: " << ins.src << "\n";
+      os << "Offset: " << Cpu::CalculateOffset(ins.imm, ins.opcode) << "\n";
       if (ins.opcode == Opcode::LOAD) {
-        os << "Dest: " << ins.dest << std::endl;
+        os << "Dest: " << ins.dest << "\n";
       }
       break;
     default:
-      os << "Invalid addressing mode" << std::endl;
+      os << "Invalid addressing mode" << "\n";
   }
   return os;
 }

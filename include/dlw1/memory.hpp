@@ -24,11 +24,11 @@ class Memory {
   Memory(uint8_t num_banks)
       : num_banks{num_banks}, banks{num_banks}, curr_bank{0} {}
 
-  uint8_t GetCurrentBank() const;
-  uint8_t GetNumBanks() const;
-  uint8_t ReadByte(const uint8_t addr) const;
-  void SetCurrentBank(const uint8_t bank);
-  void WriteByte(const uint8_t addr, const uint8_t val);
+  [[nodiscard]] uint8_t GetCurrentBank() const noexcept;
+  [[nodiscard]] uint8_t GetNumBanks() const noexcept;
+  [[nodiscard]] uint8_t ReadByte(const uint8_t addr) const noexcept;
+  void SetCurrentBank(const uint8_t bank) noexcept;
+  void WriteByte(const uint8_t addr, const uint8_t val) noexcept;
 
   friend std::ostream& operator<<(std::ostream& os, const Memory& mem);
 };

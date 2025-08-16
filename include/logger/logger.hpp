@@ -1,19 +1,21 @@
 #ifndef LOGGER_HPP
 #define LOGGER_HPP
 
-#include <spdlog/spdlog.h>
-
 #include <memory>
 #include <string>
+
+#include "spdlog/spdlog.h"
 
 class Logger {
  public:
   static void Init(
       spdlog::level::level_enum console_level = spdlog::level::info,
-      spdlog::level::level_enum file_level = spdlog::level::debug);
+      spdlog::level::level_enum file_level = spdlog::level::debug,
+      const std::string& initializer = "");
 
-  static std::shared_ptr<spdlog::logger>& GetLogger();
-  static spdlog::level::level_enum StringToLevel(const std::string& level);
+  [[nodiscard]] static std::shared_ptr<spdlog::logger>& GetLogger() noexcept;
+  [[nodiscard]] static spdlog::level::level_enum StringToLevel(
+      const std::string& level);
 
  private:
   static std::shared_ptr<spdlog::logger> logger;
