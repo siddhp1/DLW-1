@@ -39,4 +39,6 @@ class Cpu {
                                                Opcode opcode) noexcept;
 };
 
+std::ostream& operator<<(std::ostream& os, const Cpu& cpu);
+
 #endif

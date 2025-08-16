@@ -1,13 +1,18 @@
 #include "dlw1/cpu.hpp"
 
+#include <algorithm>
+#include <bitset>
 #include <cstddef>
 #include <cstdint>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
 
 #include "dlw1/instruction.hpp"
 #include "dlw1/memory.hpp"
 
-// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, hicpp-signed-bitwise,
-// readability-magic-numbers)
+// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,hicpp-signed-bitwise,readability-magic-numbers)
 
 uint8_t Cpu::ReadRegister(const RegisterId id) const noexcept {
   // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
@@ -272,5 +277,55 @@ int16_t Cpu::CalculateOffset(uint16_t imm, Opcode opcode) noexcept {
   }
 }
 
-// NOLINTEND(cppcoreguidelines-avoid-magic-numbers, hicpp-signed-bitwise,
-// readability-magic-numbers)
+std::ostream& operator<<(std::ostream& os, const Cpu& cpu) {
+  std::vector<std::string> lines;
+
+  {
+    std::ostringstream oss;
+    oss << std::bitset<8>(cpu.GetRegister(RegisterId::A)) << " "
+        << std::bitset<8>(cpu.GetRegister(RegisterId::B)) << " "
+        << std::bitset<8>(cpu.GetRegister(RegisterId::C)) << " "
+        << std::bitset<8>(cpu.GetRegister(RegisterId::D));
+    lines.push_back(oss.str());
+  }
+
+  {
+    std::ostringstream oss;
+    oss << "PC: " << static_cast<int>(cpu.GetPc()) << "   PSW: ";
+    if (cpu.GetPsw() == 0b01) {
+      oss << "ZERO";
+    } else if (cpu.GetPsw() == 0b10) {
+      oss << "NEGATIVE";
+    } else {
+      oss << "EMPTY";
+    }
+    lines.push_back(oss.str());
+  }
+
+  {
+    std::ostringstream oss;
+    oss << "IR: " << std::bitset<16>(cpu.GetIr());
+    lines.push_back(oss.str());
+  }
+
+  // Calculate the maximum line length
+  size_t max_length = 0;
+  for (const auto& line : lines) {
+    max_length = std::max(line.size(), max_length);
+  }
+
+  // Top border
+  os << "+" << std::string(max_length + 2, '-') << "+\n";
+
+  // CPU state content
+  for (const auto& line : lines) {
+    os << "| " << line << std::string(max_length - line.size(), ' ') << " |\n";
+  }
+
+  // Bottom border
+  os << "+" << std::string(max_length + 2, '-') << "+";
+
+  return os;
+}
+
+// NOLINTEND(cppcoreguidelines-avoid-magic-numbers,hicpp-signed-bitwise,readability-magic-numbers)

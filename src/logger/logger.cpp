@@ -32,7 +32,7 @@ static std::string GetCurrentDateTime() {
   localtime_r(&time_t_now, &tm_now);
 #endif
   std::ostringstream oss;
-  oss << std::put_time(&tm_now, "%Y%m%d-%H%M%S");
+  oss << std::put_time(&tm_now, "%Y%m%d_%H%M%S");
   return oss.str();
 }
 
@@ -46,8 +46,8 @@ void Logger::Init(spdlog::level::level_enum console_level,
   }
 
   try {
-    const std::string log_file_path =
-        std::string("logs/") + initializer + GetCurrentDateTime() + ".log";
+    const std::string log_file_path = std::string("logs/") + initializer + "_" +
+                                      GetCurrentDateTime() + ".log";
 
     auto log_dir = std::filesystem::path(log_file_path).parent_path();
     if (!log_dir.empty() && !std::filesystem::exists(log_dir)) {

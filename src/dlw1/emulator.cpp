@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <string>
 
+#include "dlw1/helpers.hpp"
 #include "dlw1/instruction.hpp"
 #include "dlw1/memory.hpp"
 #include "logger/logger.hpp"
@@ -60,21 +61,28 @@ void Emulator::LoadProgram() {
 
 void Emulator::Run() {
   LOG_DEBUG("Starting emulator execution");
-  std::cout << memory;
+  LOG_DEBUG("Initial memory state: \n{}", to_string(memory));
 
   size_t cycle_count = 0;
 
   while (!cpu.GetHalted()) {
     cycle_count++;
 
+    LOG_DEBUG("Cycle {}: Fetching instruction", cycle_count);
     cpu.Fetch(memory);
+
+    LOG_DEBUG("Cycle {}: Decoding instruction", cycle_count);
     const Instruction ins = cpu.Decode();
-    std::cout << ins;
+    LOG_INFO("Instruction: \n{}", to_string(ins));
 
     LOG_DEBUG("Cycle {}: Executing instruction", cycle_count);
     cpu.Execute(ins, memory);
+    LOG_INFO("CPU State: \n{}", to_string(cpu));
+
+    LOG_DEBUG("Cycle {}: Final memory state: \n{}", cycle_count,
+              to_string(memory));
   }
 
-  std::cout << memory;
-  LOG_INFO("Emulation completed after {} cycles", cycle_count);
+  LOG_DEBUG("Final memory state: \n{}", to_string(memory));
+  LOG_DEBUG("Emulation completed after {} cycles", cycle_count);
 }
