@@ -53,15 +53,14 @@
       "description": "Target Windows with the clang compiler, debug build type",
       "inherits": "conf-windows-common",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang-cl",
-        "CMAKE_CXX_COMPILER": "clang-cl",
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang",
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_FLAGS": "/EHsc",
         "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
       },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
-          "intelliSenseMode": "windows-clang-x64"
+          "enableClangTidyCodeAnalysis": true
         }
       }
     },
@@ -71,15 +70,14 @@
       "description": "Target Windows with the clang compiler, release build type",
       "inherits": "conf-windows-common",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang-cl",
-        "CMAKE_CXX_COMPILER": "clang-cl",
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang",
         "CMAKE_BUILD_TYPE": "RelWithDebInfo",
-        "CMAKE_CXX_FLAGS":  "/EHsc",
-        "CMAKE_CXX_CLANG_TIDY":  "clang-tidy"
+        "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
       },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
-          "intelliSenseMode": "windows-clang-x64"
+          "enableClangTidyCodeAnalysis": true
         }
       }
     },
@@ -92,7 +90,7 @@
         "CMAKE_C_COMPILER": "clang",
         "CMAKE_CXX_COMPILER": "clang++",
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_CLANG_TIDY":  "clang-tidy"
+        "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
       }
     },
     {
@@ -104,7 +102,7 @@
         "CMAKE_C_COMPILER": "clang",
         "CMAKE_CXX_COMPILER": "clang++",
         "CMAKE_BUILD_TYPE": "RelWithDebInfo",
-        "CMAKE_CXX_CLANG_TIDY":  "clang-tidy"
+        "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
       }
     }
   ]

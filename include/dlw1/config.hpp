@@ -11,9 +11,11 @@ struct Config {
 
   uint8_t num_banks;
   std::string program_file_path;
-  // Add verbosity here
 
-  bool Validate() const;
+  void Validate() const;
+
+ private:
+  static void ValidateProgramFile(const std::string& file_path);
 };
 
 #endif

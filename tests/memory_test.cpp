@@ -1,6 +1,8 @@
 #include "dlw1/memory.hpp"
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
+
+// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
 TEST(MemoryReadWriteTest, ReadWriteSameBank) {
   Memory memory;
@@ -23,3 +25,5 @@ TEST(MemoryReadWriteTest, ReadWriteDifferentBanks) {
   memory.SetCurrentBank(0);
   EXPECT_EQ(memory.ReadByte(128), 25);
 }
+
+// NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)

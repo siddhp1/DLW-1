@@ -1,16 +1,25 @@
-Checks: >
-  clang-analyzer-*,
-  bugprone-*,
-  performance-*,
-  readability-*,
-  modernize-*,
-  misc-*,
-  cppcoreguidelines-*,
-  -cppcoreguidelines-macro-usage,
-  -hicpp-vararg,
-  -modernize-use-trailing-return-type,
-  -readability-function-cognitive-complexity,
+Checks: "*,
+    -abseil-*,
+    -altera*,
+    -android-*,
+    -darwin-*,
+    -fuchsia-*,
+    -linuxkernel-*,
+	-llvm-*,
+    -llvmlibc-*,
+    -zircon*,
+    -cppcoreguidelines-macro-usage,
+    -misc-use-anonymous-namespace,
+    -misc-use-internal-linkage,
+    -modernize-use-trailing-return-type,
+    -readability-else-after-return,
+    -readability-static-accessed-through-instance,  
+    -readability-function-cognitive-complexity,
+    -readability-identifier-length
+"
 
 HeaderFilterRegex: ''
 WarningsAsErrors: ''
 FormatStyle: none
+ExtraArgs:
+    - -std=c++23

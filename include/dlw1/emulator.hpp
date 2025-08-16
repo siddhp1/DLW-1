@@ -15,7 +15,7 @@ class Emulator {
 
  public:
   explicit Emulator(const Config& config)
-      : config{config}, memory{config.num_banks} {};
+      : config{config}, memory{config.num_banks} {}
 
   void LoadProgram();
   void Run();

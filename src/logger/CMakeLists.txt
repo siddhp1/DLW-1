@@ -4,5 +4,3 @@ target_include_directories(logger PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}
                                          $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>)
 
 target_link_libraries(logger PUBLIC spdlog::spdlog)
-
-target_compile_features(logger PUBLIC cxx_std_23)

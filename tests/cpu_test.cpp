@@ -1,11 +1,17 @@
 #include "dlw1/cpu.hpp"
 
-#include <gtest/gtest.h>
-
+#include <array>
+#include <cstddef>
+#include <cstdint>
 #include <tuple>
+#include <utility>
+#include <vector>
 
 #include "dlw1/instruction.hpp"
 #include "dlw1/memory.hpp"
+#include "gtest/gtest.h"
+
+// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
 class CpuDecodeTest
     : public ::testing::TestWithParam<
@@ -21,9 +27,9 @@ TEST_P(CpuDecodeTest, DecodeInstruction) {
   const auto& [raw, expected_mode, expected_opcode, expected_src, expected_src2,
                expected_dest, expected_imm] = GetParam();
 
-  Cpu cpu{{0, 0, 0, 0}, raw, 0, 0, false};
+  const Cpu cpu{{0, 0, 0, 0}, raw, 0, 0, false};
 
-  Instruction instruction = cpu.Decode();
+  const Instruction instruction = cpu.Decode();
 
   EXPECT_EQ(instruction.mode, expected_mode);
   EXPECT_EQ(instruction.opcode, expected_opcode);
@@ -169,7 +175,8 @@ TEST_P(CpuExecuteTest, ExecuteInstruction) {
 
   cpu.Execute(instruction, memory);
 
-  for (size_t i = 0; i < 4; ++i) {
+  for (std::size_t i = 0; i < 4; ++i) {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
     EXPECT_EQ(cpu.GetRegister(static_cast<RegisterId>(i)),
               expected_registers[i]);
   }
@@ -401,20 +408,23 @@ class CpuCalculateLoadStoreOffsetTest
     : public ::testing::TestWithParam<Opcode> {};
 
 TEST_P(CpuCalculateLoadStoreOffsetTest, CalculatePositiveOffset) {
-  uint16_t immediate = 0b01010101;
-  int8_t offset = Cpu::CalculateOffset(immediate, GetParam());
+  const uint16_t immediate = 0b01010101;
+  // NOLINTNEXTLINE(bugprone-narrowing-conversions,cppcoreguidelines-narrowing-conversions)
+  const int8_t offset = Cpu::CalculateOffset(immediate, GetParam());
   EXPECT_EQ(offset, 85);
 }
 
 TEST_P(CpuCalculateLoadStoreOffsetTest, CalculateNegativeOffset) {
-  uint16_t immediate = 0b11010101;
-  int8_t offset = Cpu::CalculateOffset(immediate, GetParam());
+  const uint16_t immediate = 0b11010101;
+  // NOLINTNEXTLINE(bugprone-narrowing-conversions,cppcoreguidelines-narrowing-conversions)
+  const int8_t offset = Cpu::CalculateOffset(immediate, GetParam());
   EXPECT_EQ(offset, -43);
 }
 
 TEST_P(CpuCalculateLoadStoreOffsetTest, CalculateZeroOffset) {
-  uint16_t immediate = 0b00000000;
-  int8_t offset = Cpu::CalculateOffset(immediate, GetParam());
+  const uint16_t immediate = 0b00000000;
+  // NOLINTNEXTLINE(bugprone-narrowing-conversions,cppcoreguidelines-narrowing-conversions)
+  const int8_t offset = Cpu::CalculateOffset(immediate, GetParam());
   EXPECT_EQ(offset, 0);
 }
 
@@ -424,23 +434,25 @@ INSTANTIATE_TEST_SUITE_P(LOADSTORE, CpuCalculateLoadStoreOffsetTest,
 class CpuCalculateJumpOffsetTest : public ::testing::TestWithParam<Opcode> {};
 
 TEST_P(CpuCalculateJumpOffsetTest, CalculatePositiveOffset) {
-  uint16_t immediate = 0b010000010;
-  int16_t offset = Cpu::CalculateOffset(immediate, GetParam());
+  const uint16_t immediate = 0b010000010;
+  const int16_t offset = Cpu::CalculateOffset(immediate, GetParam());
   EXPECT_EQ(offset, 130);
 }
 
 TEST_P(CpuCalculateJumpOffsetTest, CalculateNegativeOffset) {
-  uint16_t immediate = 0b100000110;
-  int16_t offset = Cpu::CalculateOffset(immediate, GetParam());
+  const uint16_t immediate = 0b100000110;
+  const int16_t offset = Cpu::CalculateOffset(immediate, GetParam());
   EXPECT_EQ(offset, -250);
 }
 
 TEST_P(CpuCalculateJumpOffsetTest, CalculateZeroOffset) {
-  uint16_t immediate = 0b000000000;
-  int16_t offset = Cpu::CalculateOffset(immediate, GetParam());
+  const uint16_t immediate = 0b000000000;
+  const int16_t offset = Cpu::CalculateOffset(immediate, GetParam());
   EXPECT_EQ(offset, 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(JUMP, CpuCalculateJumpOffsetTest,
                          ::testing::Values(Opcode::JUMP, Opcode::JUMPZ,
                                            Opcode::JUMPNZ, Opcode::JUMPN));
+
+// NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)

@@ -2,7 +2,7 @@ add_executable(dlw1_app main.cpp)
 
 target_link_libraries(dlw1_app PRIVATE dlw1 logger cxxopts)
 
-target_compile_features(dlw1_app PUBLIC cxx_std_23)
+target_compile_definitions(dlw1_app PRIVATE PROJECT_VERSION="${PROJECT_VERSION}" APP_NAME="dlw1_app")
 
 add_custom_target(copy_program ALL 
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
