@@ -53,8 +53,8 @@
       "description": "Target Windows with the clang compiler, debug build type",
       "inherits": "conf-windows-common",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang",
-        "CMAKE_CXX_COMPILER": "clang",
+       "CMAKE_C_COMPILER": "clang-cl",
+        "CMAKE_CXX_COMPILER": "clang-cl",
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
       },
@@ -70,8 +70,8 @@
       "description": "Target Windows with the clang compiler, release build type",
       "inherits": "conf-windows-common",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang",
-        "CMAKE_CXX_COMPILER": "clang",
+        "CMAKE_C_COMPILER": "clang-cl",
+        "CMAKE_CXX_COMPILER": "clang-cl",
         "CMAKE_BUILD_TYPE": "RelWithDebInfo",
         "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
       },
@@ -104,6 +104,24 @@
         "CMAKE_BUILD_TYPE": "RelWithDebInfo",
         "CMAKE_CXX_CLANG_TIDY": "clang-tidy"
       }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "windows-clang-debug",
+      "configurePreset": "windows-clang-debug"
+    },
+    {
+      "name": "windows-clang-release",
+      "configurePreset": "windows-clang-release"
+    },
+    {
+      "name": "unixlike-clang-debug",
+      "configurePreset": "unixlike-clang-debug"
+    },
+    {
+      "name": "unixlike-clang-release",
+      "configurePreset": "unixlike-clang-release"
     }
   ]
 }
