@@ -1,4 +1,4 @@
-# Countdown Program
+# Sample Program
 
 This sample program counts down from 5, subtracting 1 each CPU cycle.
 
