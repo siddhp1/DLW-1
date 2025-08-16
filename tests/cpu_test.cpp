@@ -11,7 +11,7 @@
 #include "dlw1/memory.hpp"
 #include "gtest/gtest.h"
 
-// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
 class CpuDecodeTest
     : public ::testing::TestWithParam<
@@ -409,24 +409,21 @@ class CpuCalculateLoadStoreOffsetTest
 
 TEST_P(CpuCalculateLoadStoreOffsetTest, CalculatePositiveOffset) {
   const uint16_t immediate = 0b01010101;
-  // NOLINTNEXTLINE(bugprone-narrowing-conversions,
-  // cppcoreguidelines-narrowing-conversions)
+  // NOLINTNEXTLINE(bugprone-narrowing-conversions,cppcoreguidelines-narrowing-conversions)
   const int8_t offset = Cpu::CalculateOffset(immediate, GetParam());
   EXPECT_EQ(offset, 85);
 }
 
 TEST_P(CpuCalculateLoadStoreOffsetTest, CalculateNegativeOffset) {
   const uint16_t immediate = 0b11010101;
-  // NOLINTNEXTLINE(bugprone-narrowing-conversions,
-  // cppcoreguidelines-narrowing-conversions)
+  // NOLINTNEXTLINE(bugprone-narrowing-conversions,cppcoreguidelines-narrowing-conversions)
   const int8_t offset = Cpu::CalculateOffset(immediate, GetParam());
   EXPECT_EQ(offset, -43);
 }
 
 TEST_P(CpuCalculateLoadStoreOffsetTest, CalculateZeroOffset) {
   const uint16_t immediate = 0b00000000;
-  // NOLINTNEXTLINE(bugprone-narrowing-conversions,
-  // cppcoreguidelines-narrowing-conversions)
+  // NOLINTNEXTLINE(bugprone-narrowing-conversions,cppcoreguidelines-narrowing-conversions)
   const int8_t offset = Cpu::CalculateOffset(immediate, GetParam());
   EXPECT_EQ(offset, 0);
 }
@@ -458,4 +455,4 @@ INSTANTIATE_TEST_SUITE_P(JUMP, CpuCalculateJumpOffsetTest,
                          ::testing::Values(Opcode::JUMP, Opcode::JUMPZ,
                                            Opcode::JUMPNZ, Opcode::JUMPN));
 
-// NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+// NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
