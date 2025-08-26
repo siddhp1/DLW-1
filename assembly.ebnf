@@ -1,0 +1,268 @@
+letter
+    = "A"
+    | "B"
+    | "C"
+    | "D"
+    | "E"
+    | "F"
+    | "G"
+    | "H"
+    | "I"
+    | "J"
+    | "K"
+    | "L"
+    | "M"
+    | "N"
+    | "O"
+    | "P"
+    | "Q"
+    | "R"
+    | "S"
+    | "T"
+    | "U"
+    | "V"
+    | "W"
+    | "X"
+    | "Y"
+    | "Z"
+    | "a"
+    | "b"
+    | "c"
+    | "d"
+    | "e"
+    | "f"
+    | "g"
+    | "h"
+    | "i"
+    | "j"
+    | "k"
+    | "l"
+    | "m"
+    | "n"
+    | "o"
+    | "p"
+    | "q"
+    | "r"
+    | "s"
+    | "t"
+    | "u"
+    | "v"
+    | "w"
+    | "x"
+    | "y"
+    | "z";
+
+digit
+    = "0"
+    | "1"
+    | "2"
+    | "3"
+    | "4"
+    | "5"
+    | "6"
+    | "7"
+    | "8"
+    | "9";
+
+hexdigit
+    = digit
+    | "A"
+    | "B"
+    | "C"
+    | "D"
+    | "E"
+    | "F"
+    | "a"
+    | "b"
+    | "c"
+    | "d"
+    | "e"
+    | "f";
+
+bindigit
+    = "0"
+    | "1";
+
+identifier
+    = letter, { letter
+    | digit
+    | "_" };
+
+number
+    = decimal
+    | hex
+    | binary;
+
+decimal
+    = [ "+"
+    | "-" ], digit, { digit };
+
+hex
+    = [ "+"
+    | "-" ], "0x", hexdigit, { hexdigit };
+
+binary
+    = [ "+"
+    | "-" ], "0b", bindigit, { bindigit };
+
+register
+    = "RA"
+    | "RB"
+    | "RC"
+    | "RD"
+    | "ra"
+    | "rb"
+    | "rc"
+    | "rd";
+
+immediate
+    = "#", number;
+
+comment
+    = ";", { ? any character except newline ? };
+
+newline
+    = ? end of line ?;
+
+program
+    = { line };
+
+line
+    = [ statement ], [ comment ], newline;
+
+statement
+    = directive
+    | instruction
+    | label;
+
+label
+    = identifier, ":";
+
+directive
+    = org_directive
+    | byte_directive
+    | word_directive
+    | data_directive
+    | text_directive;
+
+org_directive
+    = ".org", number;
+
+byte_directive
+    = ".byte", number, { ",", number };
+
+word_directive
+    = ".word", number, { ",", number };
+
+data_directive
+    = ".data";
+
+text_directive
+    = ".text";
+
+instruction
+    = mnemonic, operands;
+
+mnemonic
+    = add_mnemonic
+    | sub_mnemonic
+    | load_mnemonic
+    | store_mnemonic
+    | mov_mnemonic
+    | bank_mnemonic
+    | jump_mnemonic
+    | jumpz_mnemonic
+    | jumpnz_mnemonic
+    | jumpn_mnemonic
+    | halt_mnemonic;
+
+add_mnemonic
+    = "add"
+    | "ADD";
+
+sub_mnemonic
+    = "sub"
+    | "SUB";
+
+load_mnemonic
+    = "load"
+    | "LOAD";
+
+store_mnemonic
+    = "store"
+    | "STORE";
+
+mov_mnemonic
+    = "mov"
+    | "MOV";
+
+bank_mnemonic
+    = "bank"
+    | "BANK";
+
+jump_mnemonic
+    = "jump"
+    | "JUMP";
+
+jumpz_mnemonic
+    = "jumpz"
+    | "JUMPZ";
+
+jumpnz_mnemonic
+    = "jumpnz"
+    | "JUMPNZ";
+
+jumpn_mnemonic
+    = "jumpn"
+    | "JUMPN";
+
+halt_mnemonic
+    = "halt"
+    | "HALT";
+
+operands
+    = add_operands
+    | sub_operands
+    | load_operands
+    | store_operands
+    | mov_operands
+    | bank_operands
+    | jump_operands
+    | halt_operands;
+
+add_operands
+    = register, ",", immediate, ",", register
+    | register, ",", register, ",", register;
+
+sub_operands
+    = register, ",", immediate, ",", register
+    | register, ",", register, ",", register;
+
+load_operands
+    = register, ",", immediate
+    | register, ",", register
+    | register, ",", "(", register, offset_operator, immediate, ")";
+
+store_operands
+    = register, ",", immediate
+    | register, ",", register
+    | register, ",", "(", register, offset_operator, immediate, ")";
+
+mov_operands
+    = register, ",", register;
+
+bank_operands
+    = immediate;
+
+jump_operands
+    = immediate
+    | identifier
+    | register
+    | "(", offset_operator, immediate, ")";
+
+halt_operands
+    = ;
+
+offset_operator
+    = "+"
+    | "-";
