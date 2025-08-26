@@ -21,5 +21,3 @@ Checks: "*,
 HeaderFilterRegex: ''
 WarningsAsErrors: ''
 FormatStyle: none
-ExtraArgs:
-    - -std=c++23
