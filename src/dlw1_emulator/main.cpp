@@ -7,8 +7,8 @@
 #include <string_view>
 
 #include "cxxopts.hpp"
-#include "dlw1/config.hpp"
-#include "dlw1/emulator.hpp"
+#include "dlw1_emulator/config.hpp"
+#include "dlw1_emulator/emulator.hpp"
 #include "logger/logger.hpp"
 #include "spdlog/common.h"
 

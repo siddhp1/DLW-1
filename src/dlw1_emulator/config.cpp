@@ -1,4 +1,4 @@
-#include "dlw1/config.hpp"
+#include "dlw1_emulator/config.hpp"
 
 #include <cstddef>
 #include <filesystem>
