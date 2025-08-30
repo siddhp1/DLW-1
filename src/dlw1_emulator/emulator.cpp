@@ -1,4 +1,4 @@
-#include "dlw1/emulator.hpp"
+#include "dlw1_emulator/emulator.hpp"
 
 #include <cstddef>
 #include <cstdint>
@@ -8,9 +8,9 @@
 #include <stdexcept>
 #include <string>
 
-#include "dlw1/helpers.hpp"
-#include "dlw1/instruction.hpp"
-#include "dlw1/memory.hpp"
+#include "dlw1_emulator/helpers.hpp"
+#include "dlw1_emulator/instruction.hpp"
+#include "dlw1_emulator/memory.hpp"
 #include "logger/logger.hpp"
 
 void Emulator::LoadProgram() {

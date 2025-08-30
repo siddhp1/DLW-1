@@ -1,4 +1,4 @@
-#include "dlw1/memory.hpp"
+#include "dlw1_emulator/memory.hpp"
 
 #include "gtest/gtest.h"
 

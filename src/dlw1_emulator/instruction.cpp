@@ -1,4 +1,4 @@
-#include "dlw1/instruction.hpp"
+#include "dlw1_emulator/instruction.hpp"
 
 #include <algorithm>
 #include <bitset>
@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "dlw1/cpu.hpp"
+#include "dlw1_emulator/cpu.hpp"
 
 std::ostream& operator<<(std::ostream& os, const AddressingMode& mode) {
   switch (mode) {

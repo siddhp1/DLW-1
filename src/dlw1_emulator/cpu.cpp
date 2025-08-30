@@ -1,4 +1,4 @@
-#include "dlw1/cpu.hpp"
+#include "dlw1_emulator/cpu.hpp"
 
 #include <algorithm>
 #include <bitset>
@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "dlw1/instruction.hpp"
-#include "dlw1/memory.hpp"
+#include "dlw1_emulator/instruction.hpp"
+#include "dlw1_emulator/memory.hpp"
 
 // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,hicpp-signed-bitwise,readability-magic-numbers)
 

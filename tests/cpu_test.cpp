@@ -1,4 +1,4 @@
-#include "dlw1/cpu.hpp"
+#include "dlw1_emulator/cpu.hpp"
 
 #include <array>
 #include <cstddef>
@@ -7,8 +7,8 @@
 #include <utility>
 #include <vector>
 
-#include "dlw1/instruction.hpp"
-#include "dlw1/memory.hpp"
+#include "dlw1_emulator/instruction.hpp"
+#include "dlw1_emulator/memory.hpp"
 #include "gtest/gtest.h"
 
 // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)

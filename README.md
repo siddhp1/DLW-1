@@ -54,7 +54,7 @@ For complete hardware, ISA, and assembly specifications, see [DLW-1.pdf](./DLW-1
 Run the DLW-1 Emulator with the following command:
 
 ```bash
-dlw1_app [OPTIONS]
+emulator [OPTIONS]
 ```
 
 Options:
@@ -72,7 +72,7 @@ Examples:
 The following command runs the sample program with DEBUG logging to the console:
 
 ```bash
-dlw1_app -f sample_program.bin -c debug
+emulator -f sample_program.bin -c debug
 ```
 
 For an explanation of the sample program, see [SAMPLE-PROGRAM.md](./SAMPLE-PROGRAM.md).
