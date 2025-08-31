@@ -1,8 +1,8 @@
 # Core DLW-1 assembler library
-add_library(dlw1_assembler STATIC temp.cpp)
+add_library(dlw1_assembler STATIC assembler.cpp lexer.cpp linestream.cpp token.cpp)
 
 target_include_directories(dlw1_assembler PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-											     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>)
+																								 $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>)
 
 target_link_libraries(dlw1_assembler PRIVATE logger)
 
